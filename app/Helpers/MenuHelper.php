@@ -15,6 +15,17 @@ class MenuHelper
                 ],
             ],
             [
+                'icon' => 'support-ticket',
+                'name' => 'Tickets',
+                'subItems' => [
+                    ['name' => 'All Tickets', 'path' => '/tickets'],
+                    ['name' => 'Create Ticket', 'path' => '/tickets/create'],
+                    ['name' => 'Active Tickets', 'path' => '/tickets?status=active'],
+                    ['name' => 'Resolved / Closed', 'path' => '/tickets?status=resolved'],
+                    ['name' => 'Import CSV', 'path' => '/tickets/import'],
+                ],
+            ],
+            [
                 'icon' => 'calendar',
                 'name' => 'Calendar',
                 'path' => '/calendar',
