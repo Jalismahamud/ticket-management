@@ -1,530 +1,199 @@
-# TailAdmin Laravel - Tailwind CSS Free Laravel Dashboard
+# Support Ticket & SLA Management System
 
-**TailAdmin Laravel** is a modern, production-ready admin dashboard template powered by **Laravel 12**, **Tailwind CSS v4**, **Alpine.js**, and a clean, modular architecture. TailAdmin is one of the most popular Tailwind CSS dashboard now also available for Larvael. It’s designed for building fast, scalable admin panels, CRM dashboards, SaaS backends, and any data-driven application where clarity and performance matter.
-![TailAdmin - Next.js Dashboard Preview](./tailadmin-laravel.png)
+A production-grade, enterprise-ready **Support Ticket & SLA Management System** built with **Laravel 12**, **Tailwind CSS v4**, **Alpine.js**, and **TailAdmin**.
 
-
-## Quick Links
-
-* [✨ Get TailAdmin Laravel](https://tailadmin.com/laravel)
-* [📄 Documentation](https://tailadmin.com/docs)
-* [⬇️ Download](https://tailadmin.com/download)
-* [🌐 Live Demo](https://laravel-demo.tailadmin.com)
-
-Here’s a tighter, more search-friendly version that highlights value and avoids fluff while keeping your structure intact.
-
-## ✨ Key Features
-
-* 🚀 **Laravel 12 Core** - Built on the latest Laravel release with improved routing, security, and Blade templating
-* 🎨 **Tailwind CSS v4** - Utility-first styling for rapid, consistent UI development
-* ⚡ **Alpine.js Interactivity** - Lightweight reactivity without a heavy JavaScript framework
-* 📦 **Vite Build System** - Fast dev server, instant HMR, and optimized production builds
-* 📱 **Fully Responsive Layouts** - Smooth, mobile-first design that adapts across all screen sizes
-* 🌙 **Built-in Dark Mode** - Ready-to-use modern dark theme for better usability and aesthetics
-* 📊 **Advanced UI Components** - Charts, data tables, forms, calendars, modals, and reusable blocks for complex dashboards
-* 🎯 **Production-Ready Dashboard UI** - Clean, modern interface crafted for real apps, not placeholder demos
-
-### Other Versions
-
-- [Next.js Version](https://github.com/TailAdmin/free-nextjs-admin-dashboard)
-- [React.js Version](https://github.com/TailAdmin/free-react-tailwind-admin-dashboard)
-- [Vue.js Version](https://github.com/TailAdmin/vue-tailwind-admin-dashboard)
-- [Angular Version](https://github.com/TailAdmin/free-angular-tailwind-dashboard)
-- [Laravel Version](https://github.com/TailAdmin/tailadmin-laravel)
-
-## 📋 Requirements
-To set up TailAdmin Laravel, make sure your environment includes:
-
-* **PHP 8.2+**
-* **Composer** (PHP dependency manager)
-* **Node.js 18+** and **npm** (for compiling frontend assets)
-* **Database** - Works with SQLite (default), MySQL, or PostgreSQL
-
-### Tailwind CSS Laravel Dashboard
-
-TailAdmin delivers a refined Tailwind CSS Laravel Dashboard experience, combining Laravel’s robust backend with Tailwind’s flexible utility classes. The result is a clean, fast, and customizable dashboard that helps developers build modern admin interfaces without the usual front-end complexity. It’s ideal for teams looking for a Tailwind-powered Laravel starter that stays lightweight and easy to scale.
-
-### Laravel Admin Dashboard
-
-If you’re searching for a dependable Laravel Admin Dashboard template that’s easy to set up and ready for production, TailAdmin fits the job. It offers a polished UI, reusable components, optimized performance, and all the essentials needed to launch dashboards, CRM systems, and internal tools quickly. It gives developers a solid foundation, so projects move faster with fewer decisions to worry about.
-
-### Check Your Environment
-
-Verify your installations:
-
-```bash
-php -v
-composer -V
-node -v
-npm -v
-```
-
-## 🐳 Docker & Laravel Sail Setup (Official)
-
-TailAdmin Laravel includes pre-configured, official support for **Docker** powered by **Laravel Sail** (PHP 8.4, MySQL 8.0, Redis, and Mailpit).
-
-### Prerequisites
-Make sure [Docker Desktop](https://www.docker.com/products/docker-desktop/) is installed and running on your machine.
-
-### Quick Start with Docker & Sail
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/TailAdmin/tailadmin-laravel.git
-   cd tailadmin-laravel
-   ```
-
-2. **Configure environment:**
-   ```bash
-   cp .env.example .env
-   ```
-   In your `.env` file, ensure container networking is set:
-   ```env
-   DB_HOST=mysql
-   DB_USERNAME=sail
-   DB_PASSWORD=password
-   REDIS_HOST=redis
-   ```
-
-3. **Install Composer dependencies (if PHP is not installed locally):**
-   ```bash
-   docker run --rm \
-       -u "$(id -u):$(id -g)" \
-       -v "$(pwd):/var/www/html" \
-       -w /var/www/html \
-       laravelsail/php84-composer:latest \
-       composer install --ignore-platform-reqs
-   ```
-   *(Or simply run `composer install` if you have PHP and Composer locally).*
-
-4. **Start Docker containers:**
-   ```bash
-   ./vendor/bin/sail up -d
-   ```
-
-5. **Generate application key & run migrations:**
-   ```bash
-   ./vendor/bin/sail artisan key:generate
-   ./vendor/bin/sail artisan migrate
-   ```
-
-6. **Install frontend dependencies & start Vite dev server:**
-   ```bash
-   ./vendor/bin/sail npm install
-   ./vendor/bin/sail npm run dev
-   ```
-
-7. **Access the application:**
-   - **TailAdmin Dashboard:** [http://localhost](http://localhost) (or [http://localhost:8000](http://localhost:8000) if `APP_PORT=8000`)
-   - **Vite Dev Server:** [http://localhost:5173](http://localhost:5173) (auto-proxied with HMR)
-   - **Mailpit Web UI:** [http://localhost:8025](http://localhost:8025)
-
-### Convenient Sail Shell Alias
-To avoid typing `./vendor/bin/sail` repeatedly, add an alias to your shell profile (`~/.zshrc` or `~/.bashrc`):
-```bash
-alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
-```
-Now you can run:
-```bash
-sail up -d
-sail artisan migrate
-sail npm run dev
-sail down
-```
-
-### Container Networking & Vite Architecture
-- **Vite Dev Server (Port 5173)**: Pre-configured in `vite.config.js` with `server.host: "0.0.0.0"` and `server.hmr.host: "localhost"`. This ensures the host browser can access assets directly without `ERR_EMPTY_RESPONSE` connection errors.
-- **Volume File Watcher**: File polling (`usePolling: true`) is enabled in `vite.config.js` to guarantee instant hot reload when editing code on macOS, Windows, or Linux host filesystems.
-- **Container Database Host**: Inside the Docker bridge network, services communicate via container names. Set `DB_HOST=mysql` and `REDIS_HOST=redis` inside Docker.
-- **Tailwind CSS v4**: Seamlessly compiled inside containers via `@tailwindcss/vite` without legacy v3 config conflicts.
+This application enables customers to submit and track support requests, and empowers support agents and administrators to manage, claim, assign, escalate, and resolve tickets within business-hour-aware SLA deadlines.
 
 ---
 
-## 🚀 Quick Start Installation (Local / Native)
+## 🚀 Key Highlights & Business Capabilities
 
-### Step 1: Clone the Repository
+1. **Sequential & Scalable Ticket ID Generation:**
+   - Format: `TKT-YYYY-000001` (e.g. `TKT-2026-000001`).
+   - Concurrency-safe sequence generation with database locking to prevent sequence collisions.
 
+2. **Accurate Business Hours SLA Calculation (`SlaCalculatorService`):**
+   - Configurable resolution time per priority:
+     - **Critical:** 2 Hours
+     - **High:** 8 Hours
+     - **Medium:** 24 Hours
+     - **Low:** 48 Hours
+   - **Business Days:** Sunday – Thursday (configurable in `config/sla.php`).
+   - **Business Hours:** 9:00 AM – 6:00 PM.
+   - Non-working hours, weekends, and holidays are mathematically skipped. (e.g. A *Critical* 2-hour ticket created on Thursday at 5:00 PM has an SLA deadline of **Sunday at 10:00 AM**).
+
+3. **Race-Condition-Safe Concurrent Ticket Assignment (`TicketAssignmentService`):**
+   - Implements **Database Pessimistic Locking (`lockForUpdate()`)** within transactions.
+   - Prevents two agents from claiming or accepting the same unassigned ticket simultaneously.
+   - **Automatic Workload Balancing:** Auto-assigns tickets to the support agent with the fewest active tickets.
+
+4. **Role-Based Server-Side Authorization (RBAC):**
+   - Roles: `admin`, `agent`, `customer`.
+   - **Customer Isolation:** Customers only access their own tickets.
+   - **Private Internal Notes:** Support agents and administrators can post internal notes (`is_internal = true`) with gold visual highlights. **Internal notes and their attachments are strictly hidden from customers at both UI and server policy levels.**
+
+5. **Secure File Storage & DRY File Helper (`FileHelper`):**
+   - File validation (MIME types, maximum size limits).
+   - DRY helper functions for upload, update, and automatic deletion of old files on update/delete.
+   - Protected download endpoints requiring view policy authorization.
+
+6. **Automated SLA Escalation & Scheduled Tasks:**
+   - Artisan command: `php artisan ticket:check-sla`
+   - Automatically marks breached tickets as escalated, logs audit history, and notifies agents and administrators.
+   - Alerts agents on tickets approaching breach (< 2 hours remaining).
+
+7. **Asynchronous Queued Notifications:**
+   - Notifications for ticket creation, agent assignment, customer/agent replies, and SLA escalations.
+   - Queued via `ShouldQueue` on the `database` driver for non-blocking HTTP requests.
+
+8. **Memory-Efficient Streaming CSV Import:**
+   - Streamed processing (`fgetcsv`) maintaining $O(1)$ memory usage for files of any size.
+   - Validates required headers and rows, detects duplicate submissions, and executes chunked database transactions.
+   - Downloadable CSV template and complete error reporting with line numbers.
+
+9. **Interactive Dashboard & Audit Timeline:**
+   - KPI metrics: Open, Unassigned, Critical, SLA Breached, Approaching Breach, and Resolved.
+   - Workload distribution by support agent.
+   - Chronological audit history log for all ticket events (creation, assignment, replies, escalations).
+
+---
+
+## 🛠️ Tech Stack
+
+- **Backend:** Laravel 12.x, PHP >= 8.2
+- **Database:** MySQL 8.x / SQLite
+- **Frontend / Styling:** Tailwind CSS v4, Alpine.js v3, Vite 7
+- **Admin Layout:** TailAdmin Free Laravel Edition
+- **Testing:** Pest PHP 4.x / PHPUnit 12.x
+
+---
+
+## 💻 Local Setup Instructions
+
+### 1. Clone the Repository
 ```bash
-git clone https://github.com/TailAdmin/tailadmin-laravel.git
-cd tailadmin-laravel
+git clone https://github.com/Jalismahamud/ticket-management.git
+cd ticket-management
 ```
 
-### Step 2: Install PHP Dependencies
-
+### 2. Install Dependencies
 ```bash
 composer install
-```
-
-This command will install all Laravel dependencies defined in `composer.json`.
-
-### Step 3: Install Node.js Dependencies
-
-```bash
 npm install
 ```
 
-Or if you prefer yarn or pnpm:
-
-```bash
-# Using yarn
-yarn install
-
-# Using pnpm
-pnpm install
-```
-
-### Step 4: Environment Configuration
-
-Copy the example environment file:
-
+### 3. Environment Configuration
+Copy `.env.example` to `.env` (or configure your database details in `.env`):
 ```bash
 cp .env.example .env
-```
-
-**For Windows users:**
-
-```bash
-copy .env.example .env
-```
-
-**Or create it programmatically:**
-
-```bash
-php -r "file_exists('.env') || copy('.env.example', '.env');"
-```
-
-### Step 5: Generate Application Key
-
-```bash
 php artisan key:generate
 ```
 
-This creates a unique encryption key for your application.
-
-### Step 6: Configure Database
-
-#### Option A: Using MySQL/PostgreSQL
-
-Update your `.env` file with your database credentials:
-
-```env
+Verify your database settings in `.env`:
+```ini
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=tailadmin_db
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
+DB_DATABASE=ticket_manager
+DB_USERNAME=root
+DB_PASSWORD=
+QUEUE_CONNECTION=database
 ```
 
-Create the database:
-
+### 4. Run Migrations & Seeders
 ```bash
-# MySQL
-mysql -u root -p -e "CREATE DATABASE tailadmin_db;"
-
-# PostgreSQL
-createdb tailadmin_db
+php artisan migrate:fresh --seed
 ```
 
-Run migrations:
-
+### 5. Build Frontend Assets
 ```bash
-php artisan migrate
+npm run build
+# Or for development with hot-reload:
+# npm run dev
 ```
 
-### Step 7: (Optional) Seed the Database
-
-If you want sample data:
-
-```bash
-php artisan db:seed
-```
-
-### Step 8: Storage Link
-
-Create a symbolic link for file storage:
-
-```bash
-php artisan storage:link
-```
-
-## 🏃 Running the Application
-
-### Development Mode (Recommended)
-
-The easiest way to start development is using the built-in script:
-
-```bash
-composer run dev
-```
-
-This single command starts:
-- ✅ Laravel development server (http://localhost:8000)
-- ✅ Vite dev server for hot module reloading
-- ✅ Queue worker for background jobs
-- ✅ Log monitoring
-
-**Access your application at:** [http://localhost:8000](http://localhost:8000)
-
-### Manual Development Setup
-
-If you prefer to run services individually in separate terminal windows:
-
-**Terminal 1 - Laravel Server:**
+### 6. Start the Development Server
 ```bash
 php artisan serve
 ```
+Open [http://localhost:8000](http://localhost:8000) in your browser.
 
-**Terminal 2 - Frontend Assets:**
+---
+
+## 🔑 Pre-Seeded Demo Accounts
+
+All accounts share the default password: `password`
+
+| Role | Email | Password | Access Level |
+|---|---|---|---|
+| **Administrator** | `admin@example.com` | `password` | Full system access, reassignments, all tickets & SLA metrics |
+| **Support Agent 1** | `agent1@example.com` | `password` | Technical Support, ticket claiming, internal notes |
+| **Support Agent 2** | `agent2@example.com` | `password` | Billing & Accounts, ticket claiming, internal notes |
+| **Customer 1** | `customer1@example.com` | `password` | Permitted access to own tickets only |
+| **Customer 2** | `customer2@example.com` | `password` | Permitted access to own tickets only |
+
+> 💡 **Quick Switcher:** On the Sign-In page and Dashboard, a 1-click **Role Switcher** is provided for instant evaluator testing without manual credential re-typing.
+
+---
+
+## ⚙️ Background Processing & Scheduler
+
+### 1. Queue Worker
+To process background notifications and emails without blocking HTTP requests:
 ```bash
-npm run dev
+php artisan queue:work
 ```
 
-### Building for Production
-
-#### Build Frontend Assets
-
+### 2. SLA Escalation Scheduler
+To run SLA monitoring manually:
 ```bash
-npm run build
+php artisan ticket:check-sla
 ```
-
-#### Optimize Laravel
-
+To run the Laravel Scheduler daemon locally:
 ```bash
-# Clear and cache configuration
-php artisan config:cache
-
-# Cache routes
-php artisan route:cache
-
-# Cache views
-php artisan view:cache
-
-# Optimize autoloader
-composer install --optimize-autoloader --no-dev
+php artisan schedule:work
 ```
 
-#### Production Environment
+---
 
-Update your `.env` for production:
+## 🧪 Automated Testing
 
-```env
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://yourdomain.com
-```
+The project includes automated feature tests covering core business requirements:
+- **SLA Calculation:** Thursday 5:00 PM + 2h Critical SLA -> Sunday 10:00 AM, multi-day roll-overs, and weekend detection.
+- **Concurrent Assignment:** Verifies race condition prevention using `lockForUpdate()` and checks `TicketAlreadyAssignedException`.
+- **Authorization:** Customer isolation, 403 barriers, and complete concealment of internal agent notes from customers.
+- **Ticket Lifecycle & CSV Import:** Sequential ID generation, status transitions, and duplicate prevention.
 
-
-## 🧪 Testing
-
-Run the test suite using Pest:
-
-```bash
-composer run test
-```
-
-Or manually:
-
+To run the complete test suite:
 ```bash
 php artisan test
 ```
 
-Run with coverage:
+---
 
-```bash
-php artisan test --coverage
-```
+## 📐 Architecture & Key Design Decisions
 
-Run specific tests:
+### 1. SLA Business Hours Calculation (`App\Services\SlaCalculatorService`)
+- Defined in `config/sla.php`.
+- Algorithm snaps timestamps outside working windows to 9:00 AM of the next valid business day.
+- Iteratively accumulates minutes across business days while respecting daily closing hours (6:00 PM).
 
-```bash
-php artisan test --filter=ExampleTest
-```
+### 2. Concurrency Safety (`App\Services\TicketAssignmentService`)
+- When an agent claims an unassigned ticket, a database pessimistic lock (`Ticket::where('id', $id)->lockForUpdate()->first()`) is acquired within a `DB::transaction()`.
+- If another agent submitted a claim within milliseconds, the lock ensures serialized execution: the second agent encounters a non-null `assigned_to` and receives a user-friendly `TicketAlreadyAssignedException`.
 
-## 📜 Available Commands
+### 3. Complete Separation of Internal Notes
+- Internal notes are stored in `ticket_replies` with `is_internal = true`.
+- In `TicketController@show`, if `auth()->user()->isCustomer()`, only public replies are queried (`->where('is_internal', false)`).
+- `TicketPolicy::addInternalNote` enforces server-side permission checks.
+- Attachments associated with internal notes reject customer download attempts with HTTP 403.
 
-### Composer Scripts
-
-```bash
-# Start development environment
-composer run dev
-
-# Run tests
-composer run test
-
-# Code formatting (if configured)
-composer run format
-
-# Static analysis (if configured)
-composer run analyze
-```
-
-### NPM Scripts
-
-```bash
-# Start Vite dev server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Lint JavaScript/TypeScript
-npm run lint
-
-# Format code
-npm run format
-```
-
-### Artisan Commands
-
-```bash
-# Start development server
-php artisan serve
-
-# Run migrations
-php artisan migrate
-
-# Rollback migrations
-php artisan migrate:rollback
-
-# Fresh migrations with seeding
-php artisan migrate:fresh --seed
-
-# Generate application key
-php artisan key:generate
-
-# Clear all caches
-php artisan optimize:clear
-
-# Cache everything for production
-php artisan optimize
-
-# Create symbolic link for storage
-php artisan storage:link
-
-# Start queue worker
-php artisan queue:work
-
-# List all routes
-php artisan route:list
-
-# Create a new controller
-php artisan make:controller YourController
-
-# Create a new model
-php artisan make:model YourModel -m
-
-# Create a new migration
-php artisan make:migration create_your_table
-```
-
-## 📁 Project Structure
-
-```
-tailadmin-laravel/
-├── app/                    # Application logic
-│   ├── Http/              # Controllers, Middleware, Requests
-│   ├── Models/            # Eloquent models
-│   └── Providers/         # Service providers
-├── bootstrap/             # Framework bootstrap files
-├── config/                # Configuration files
-├── database/              # Migrations, seeders, factories
-│   ├── migrations/
-│   ├── seeders/
-│   └── factories/
-├── public/                # Public assets (entry point)
-│   ├── build/            # Compiled assets (generated)
-│   └── index.php         # Application entry point
-├── resources/             # Views and raw assets
-│   ├── css/              # Stylesheets (Tailwind)
-│   ├── js/               # JavaScript files (Alpine.js)
-│   └── views/            # Blade templates
-├── routes/                # Route definitions
-│   ├── web.php           # Web routes
-│   ├── api.php           # API routes
-│   └── console.php       # Console routes
-├── storage/               # Logs, cache, uploads
-│   ├── app/
-│   ├── framework/
-│   └── logs/
-├── tests/                 # Pest test files
-│   ├── Feature/
-│   └── Unit/
-├── docker-compose.yml     # Docker & Laravel Sail configuration
-├── .env.example           # Example environment file
-├── artisan                # Artisan CLI
-├── composer.json          # PHP dependencies
-├── package.json           # Node dependencies
-├── vite.config.js         # Vite configuration with container networking
-└── resources/css/app.css  # Tailwind CSS v4 configuration (@theme)
-```
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### "Class not found" errors
-```bash
-composer dump-autoload
-```
-
-#### Permission errors on storage/bootstrap/cache
-```bash
-chmod -R 775 storage bootstrap/cache
-```
-
-#### NPM build errors
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
-#### Clear all caches
-```bash
-php artisan optimize:clear
-```
-
-#### Database connection errors
-- Check `.env` database credentials
-- Ensure database server is running
-- Verify database exists
-
-## 🔄 Update Log
-
-### [1.1.2] - 2026-09-02
-
-- **Dependency updates**: FullCalendar upgraded to v7 and ApexCharts / Swiper bumped to latest versions.
-- **RTL layout support**: Added right-to-left (RTL) direction support with automatic layout flipping and toggle.
-- **Language / RTL switcher**: Added switcher in user dropdown with persistent direction state in `localStorage`.
-- **Keyboard & dropdown improvements**: Enhanced dropdown behavior and click-outside handling.
-- **Tailwind CSS v4 optimizations**: Applied CSS logical properties across sidebar, tables, header, and components.
-
-
-### [2026-05-23]
-
-- Added **AI Settings** page to configure models, keys, and token limits.
-- Added **Maps** page with MapLibre GL, Leaflet, and iframe styles.
-- Added **Vector Maps** page powered by AmCharts 5 geodata (World & USA).
-- Added **Radar Charts** page with 3 unique formats.
-- Added **Radial Progress Charts** page featuring 4 custom layout templates.
-- Introduced new **Bar Charts Five & Six** and **Pie Charts Four & Five**.
-
-### [April 28, 2026]
-- Added **AI Dashboard** with token usage and revenue tracking.
-- Added **Sales Dashboard** with retention and multi-channel analytics.
-- Added **Finance Dashboard** with cashflow and balance management.
-- Introduced **6 New Layout variations** for improved UI flexibility.
-- Integrated **Advanced Data Visualization** with 7+ new chart types.
-
-### [2026-03-15]
-- Fixed PHP 8.5 deprecation warning
-
-### [2025-12-29]
-- Added Date Picker in Statistics Chart
-
-## License
-
-Refer to our [LICENSE](https://tailadmin.com/license) page for more information.
+### 4. Database Indexing Strategy
+Compound and selective indexes are configured in migrations:
+- `['status', 'priority']`
+- `['assigned_to', 'status']`
+- `['created_by', 'status']`
+- `['status', 'sla_due_at']`
+- `['is_escalated', 'sla_due_at']`
+- `['ticket_id', 'is_internal', 'created_at']`
+These indexes guarantee query response times remain optimal as ticket and conversation counts scale into hundreds of thousands of rows.

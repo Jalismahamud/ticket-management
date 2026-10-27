@@ -7,12 +7,17 @@ use App\Models\User;
 
 class TicketPolicy
 {
+    protected function isActiveUser(User $user): bool
+    {
+        return ($user->is_active ?? true) !== false;
+    }
+
     /**
      * Determine whether the user can view any tickets.
      */
     public function viewAny(User $user): bool
     {
-        return $user->is_active;
+        return $this->isActiveUser($user);
     }
 
     /**
@@ -20,7 +25,7 @@ class TicketPolicy
      */
     public function view(User $user, Ticket $ticket): bool
     {
-        if (!$user->is_active) {
+        if (!$this->isActiveUser($user)) {
             return false;
         }
 
@@ -37,7 +42,7 @@ class TicketPolicy
      */
     public function create(User $user): bool
     {
-        return $user->is_active;
+        return $this->isActiveUser($user);
     }
 
     /**
@@ -45,15 +50,11 @@ class TicketPolicy
      */
     public function update(User $user, Ticket $ticket): bool
     {
-        if (!$user->is_active) {
+        if (!$this->isActiveUser($user)) {
             return false;
         }
 
-        if ($user->isAdmin()) {
-            return true;
-        }
-
-        if ($user->isAgent()) {
+        if ($user->isAdmin() || $user->isAgent()) {
             return true;
         }
 
@@ -66,7 +67,7 @@ class TicketPolicy
      */
     public function assign(User $user, Ticket $ticket): bool
     {
-        return $user->is_active && ($user->isAdmin() || $user->isAgent());
+        return $this->isActiveUser($user) && ($user->isAdmin() || $user->isAgent());
     }
 
     /**
@@ -74,7 +75,7 @@ class TicketPolicy
      */
     public function claim(User $user, Ticket $ticket): bool
     {
-        return $user->is_active && ($user->isAdmin() || $user->isAgent()) && is_null($ticket->assigned_to);
+        return $this->isActiveUser($user) && ($user->isAdmin() || $user->isAgent()) && is_null($ticket->assigned_to);
     }
 
     /**
@@ -82,7 +83,7 @@ class TicketPolicy
      */
     public function reply(User $user, Ticket $ticket): bool
     {
-        if (!$user->is_active || $ticket->isClosed()) {
+        if (!$this->isActiveUser($user) || $ticket->isClosed()) {
             return false;
         }
 
@@ -99,7 +100,7 @@ class TicketPolicy
      */
     public function addInternalNote(User $user, Ticket $ticket): bool
     {
-        return $user->is_active && ($user->isAdmin() || $user->isAgent());
+        return $this->isActiveUser($user) && ($user->isAdmin() || $user->isAgent());
     }
 
     /**
@@ -107,7 +108,7 @@ class TicketPolicy
      */
     public function resolve(User $user, Ticket $ticket): bool
     {
-        return $user->is_active && ($user->isAdmin() || $user->isAgent());
+        return $this->isActiveUser($user) && ($user->isAdmin() || $user->isAgent());
     }
 
     /**
@@ -115,7 +116,7 @@ class TicketPolicy
      */
     public function close(User $user, Ticket $ticket): bool
     {
-        if (!$user->is_active) {
+        if (!$this->isActiveUser($user)) {
             return false;
         }
 
@@ -131,6 +132,6 @@ class TicketPolicy
      */
     public function delete(User $user, Ticket $ticket): bool
     {
-        return $user->is_active && $user->isAdmin();
+        return $this->isActiveUser($user) && $user->isAdmin();
     }
 }

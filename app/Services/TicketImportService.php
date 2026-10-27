@@ -89,6 +89,7 @@ class TicketImportService
         $imported = 0;
         $skipped = 0;
         $errors = [];
+        $seenInFile = [];
         $rowNumber = 1;
 
         $batch = [];
@@ -151,7 +152,14 @@ class TicketImportService
                 ]
             );
 
-            // Duplicate detection: check if same subject by this customer exists
+            // Duplicate detection: check within current file and database
+            $seenKey = $customer->id . '|' . strtolower($subject);
+            if (isset($seenInFile[$seenKey])) {
+                $errors[] = "Row {$rowNumber}: Duplicate ticket skipped for '{$subject}' by {$customerEmail}.";
+                $skipped++;
+                continue;
+            }
+
             $exists = Ticket::where('created_by', $customer->id)
                 ->where('subject', $subject)
                 ->exists();
@@ -161,6 +169,8 @@ class TicketImportService
                 $skipped++;
                 continue;
             }
+
+            $seenInFile[$seenKey] = true;
 
             $batch[] = [
                 'subject' => $subject,

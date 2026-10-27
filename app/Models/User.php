@@ -15,6 +15,11 @@ class User extends Authenticatable
     public const ROLE_AGENT = 'agent';
     public const ROLE_CUSTOMER = 'customer';
 
+    protected $attributes = [
+        'is_active' => true,
+        'role' => self::ROLE_CUSTOMER,
+    ];
+
     protected $fillable = [
         'name',
         'email',
