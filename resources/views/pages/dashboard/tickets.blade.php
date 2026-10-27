@@ -1,0 +1,297 @@
+@extends('layouts.app')
+
+@section('content')
+    <div class="space-y-6">
+        <!-- Dashboard Header -->
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h1 class="text-title-md font-semibold text-gray-800 dark:text-white/90">
+                    Support Ticket & SLA Dashboard
+                </h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Real-time overview of ticket assignments, resolution workloads, and SLA compliance.
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('tickets.index') }}"
+                    class="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/5">
+                    View All Tickets
+                </a>
+                <a href="{{ route('tickets.create') }}"
+                    class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
+                    <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    New Ticket
+                </a>
+            </div>
+        </div>
+
+        <!-- 6 KPI Metrics Grid -->
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            <!-- 1. Open Tickets -->
+            <a href="{{ route('tickets.index', ['tab' => 'active']) }}"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900 group">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Open Tickets</span>
+                    <span class="flex size-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </span>
+                </div>
+                <div class="mt-3 flex items-baseline gap-2">
+                    <span class="text-2xl font-bold text-gray-900 dark:text-white">{{ $metrics->open_count ?? 0 }}</span>
+                    <span class="text-xs text-gray-400">in progress</span>
+                </div>
+            </a>
+
+            <!-- 2. Unassigned -->
+            <a href="{{ route('tickets.index', ['tab' => 'unassigned']) }}"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900 group">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Unassigned</span>
+                    <span class="flex size-8 items-center justify-center rounded-lg bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400">
+                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    </span>
+                </div>
+                <div class="mt-3 flex items-baseline gap-2">
+                    <span class="text-2xl font-bold text-gray-900 dark:text-white">{{ $metrics->unassigned_count ?? 0 }}</span>
+                    <span class="text-xs text-warning-600 dark:text-warning-400">needs agent</span>
+                </div>
+            </a>
+
+            <!-- 3. Critical Priority -->
+            <a href="{{ route('tickets.index', ['priority' => 'critical']) }}"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900 group">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Critical Priority</span>
+                    <span class="flex size-8 items-center justify-center rounded-lg bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-400">
+                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    </span>
+                </div>
+                <div class="mt-3 flex items-baseline gap-2">
+                    <span class="text-2xl font-bold text-error-600 dark:text-error-400">{{ $metrics->critical_count ?? 0 }}</span>
+                    <span class="text-xs text-gray-400">2h SLA</span>
+                </div>
+            </a>
+
+            <!-- 4. SLA Breached -->
+            <a href="{{ route('tickets.index', ['tab' => 'breached']) }}"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900 group">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">SLA Breached</span>
+                    <span class="flex size-8 items-center justify-center rounded-lg bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-400">
+                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </span>
+                </div>
+                <div class="mt-3 flex items-baseline gap-2">
+                    <span class="text-2xl font-bold text-error-700 dark:text-error-400">{{ $metrics->breached_count ?? 0 }}</span>
+                    <span class="text-xs text-error-600 dark:text-error-400">overdue</span>
+                </div>
+            </a>
+
+            <!-- 5. Approaching Breach -->
+            <a href="{{ route('tickets.index', ['tab' => 'approaching']) }}"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900 group">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Approaching SLA</span>
+                    <span class="flex size-8 items-center justify-center rounded-lg bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400">
+                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </span>
+                </div>
+                <div class="mt-3 flex items-baseline gap-2">
+                    <span class="text-2xl font-bold text-orange-600 dark:text-orange-400">{{ $metrics->approaching_count ?? 0 }}</span>
+                    <span class="text-xs text-orange-500">&lt; 2h left</span>
+                </div>
+            </a>
+
+            <!-- 6. Resolved -->
+            <a href="{{ route('tickets.index', ['tab' => 'resolved']) }}"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900 group">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Resolved</span>
+                    <span class="flex size-8 items-center justify-center rounded-lg bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400">
+                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    </span>
+                </div>
+                <div class="mt-3 flex items-baseline gap-2">
+                    <span class="text-2xl font-bold text-success-600 dark:text-success-400">{{ $metrics->resolved_count ?? 0 }}</span>
+                    <span class="text-xs text-gray-400">closed</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- 2 Column Section: Left (7 Cols) & Right (5 Cols) -->
+        <div class="grid grid-cols-12 gap-6">
+            <!-- Left Column: Tickets by Priority & Recent Tickets -->
+            <div class="col-span-12 space-y-6 lg:col-span-7">
+                <!-- Tickets by Priority Card -->
+                <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                            Active Tickets by Priority
+                        </h2>
+                        <span class="text-xs text-gray-400">Live Breakdown</span>
+                    </div>
+
+                    @php
+                        $totalActive = array_sum($ticketsByPriority);
+                        $calcPct = fn($val) => $totalActive > 0 ? round(($val / $totalActive) * 100) : 0;
+                    @endphp
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
+                        <!-- Critical -->
+                        <div class="rounded-xl border border-error-200 bg-error-50/40 p-4 dark:border-error-500/20 dark:bg-error-500/5">
+                            <span class="text-xs font-semibold text-error-700 dark:text-error-400 block">Critical (2h)</span>
+                            <span class="text-2xl font-bold text-error-800 dark:text-error-300">{{ $ticketsByPriority['critical'] }}</span>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400 block mt-1">{{ $calcPct($ticketsByPriority['critical']) }}% of active</span>
+                        </div>
+
+                        <!-- High -->
+                        <div class="rounded-xl border border-orange-200 bg-orange-50/40 p-4 dark:border-orange-500/20 dark:bg-orange-500/5">
+                            <span class="text-xs font-semibold text-orange-700 dark:text-orange-400 block">High (8h)</span>
+                            <span class="text-2xl font-bold text-orange-800 dark:text-orange-300">{{ $ticketsByPriority['high'] }}</span>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400 block mt-1">{{ $calcPct($ticketsByPriority['high']) }}% of active</span>
+                        </div>
+
+                        <!-- Medium -->
+                        <div class="rounded-xl border border-brand-200 bg-brand-50/40 p-4 dark:border-brand-500/20 dark:bg-brand-500/5">
+                            <span class="text-xs font-semibold text-brand-700 dark:text-brand-400 block">Medium (24h)</span>
+                            <span class="text-2xl font-bold text-brand-800 dark:text-brand-300">{{ $ticketsByPriority['medium'] }}</span>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400 block mt-1">{{ $calcPct($ticketsByPriority['medium']) }}% of active</span>
+                        </div>
+
+                        <!-- Low -->
+                        <div class="rounded-xl border border-gray-200 bg-gray-50/60 p-4 dark:border-gray-700 dark:bg-white/[0.02]">
+                            <span class="text-xs font-semibold text-gray-600 dark:text-gray-400 block">Low (48h)</span>
+                            <span class="text-2xl font-bold text-gray-800 dark:text-gray-200">{{ $ticketsByPriority['low'] }}</span>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400 block mt-1">{{ $calcPct($ticketsByPriority['low']) }}% of active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Urgent & Active Tickets -->
+                <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                            Urgent & Recent Tickets
+                        </h2>
+                        <a href="{{ route('tickets.index') }}" class="text-xs font-medium text-brand-500 hover:underline">
+                            View all →
+                        </a>
+                    </div>
+
+                    <div class="overflow-x-auto mt-2">
+                        <table class="w-full text-start text-xs">
+                            <thead class="text-gray-400 uppercase text-[11px] border-b border-gray-100 dark:border-gray-800">
+                                <tr>
+                                    <th class="py-2.5 text-start">Ticket ID</th>
+                                    <th class="py-2.5 text-start">Subject</th>
+                                    <th class="py-2.5 text-start">Priority</th>
+                                    <th class="py-2.5 text-start">Assigned To</th>
+                                    <th class="py-2.5 text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                                @forelse ($recentTickets as $ticket)
+                                    <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.02]">
+                                        <td class="py-3 font-mono font-medium text-gray-900 dark:text-white">
+                                            <a href="{{ route('tickets.show', $ticket) }}" class="text-brand-500 hover:underline">
+                                                {{ $ticket->ticket_number }}
+                                            </a>
+                                        </td>
+                                        <td class="py-3 max-w-xs truncate text-gray-800 dark:text-gray-200 font-medium">
+                                            {{ $ticket->subject }}
+                                        </td>
+                                        <td class="py-3">
+                                            <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase
+                                                {{ $ticket->priority === 'critical' ? 'bg-error-50 text-error-700 dark:bg-error-500/15 dark:text-error-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300' }}">
+                                                {{ $ticket->priority }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3 text-gray-600 dark:text-gray-400">
+                                            {{ $ticket->assignee?->name ?? 'Unassigned' }}
+                                        </td>
+                                        <td class="py-3 text-end">
+                                            <a href="{{ route('tickets.show', $ticket) }}" class="rounded border px-2 py-1 text-[11px] font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300">
+                                                Open
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="py-6 text-center text-gray-400">No active tickets right now.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Agent Workloads & Demo Switcher -->
+            <div class="col-span-12 space-y-6 lg:col-span-5">
+                <!-- Agent Workload Distribution -->
+                <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                            Support Agent Workloads
+                        </h2>
+                        <span class="text-xs text-gray-400">Auto-Balancing</span>
+                    </div>
+
+                    <div class="mt-4 space-y-4">
+                        @forelse ($agentsWorkload as $agent)
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="inline-flex size-9 items-center justify-center rounded-full bg-brand-50 text-xs font-semibold text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
+                                        {{ substr($agent->name, 0, 1) }}
+                                    </span>
+                                    <div>
+                                        <span class="block text-sm font-medium text-gray-800 dark:text-white">{{ $agent->name }}</span>
+                                        <span class="text-xs text-gray-400">{{ $agent->department ?? 'Support Team' }}</span>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold
+                                        {{ $agent->tickets_assigned_count > 3 ? 'bg-error-50 text-error-700 dark:bg-error-500/15 dark:text-error-400' : 'bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-400' }}">
+                                        {{ $agent->tickets_assigned_count }} Active
+                                    </span>
+                                </div>
+                            </div>
+                        @empty
+                            <p class="text-xs text-gray-400">No support agents configured.</p>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Evaluator Demo Switcher Widget -->
+                <div class="rounded-2xl border border-brand-200 bg-brand-50/30 p-6 shadow-theme-xs dark:border-brand-500/20 dark:bg-brand-500/5">
+                    <h3 class="text-sm font-semibold text-brand-900 dark:text-brand-300 mb-1">
+                        Technical Evaluation Role Switcher
+                    </h3>
+                    <p class="text-xs text-gray-600 dark:text-gray-400 mb-4">
+                        Switch between RBAC permissions instantly to verify customer vs agent vs administrator authorization.
+                    </p>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <a href="{{ route('quick.login', 'admin') }}"
+                            class="flex flex-col items-center justify-center rounded-lg border border-gray-300 bg-white p-2 text-center text-xs font-medium text-gray-700 hover:bg-gray-50 shadow-theme-xs dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                            <span class="font-bold text-error-600 dark:text-error-400">Admin</span>
+                            <span class="text-[10px] text-gray-400">Full Access</span>
+                        </a>
+
+                        <a href="{{ route('quick.login', 'agent') }}"
+                            class="flex flex-col items-center justify-center rounded-lg border border-gray-300 bg-white p-2 text-center text-xs font-medium text-gray-700 hover:bg-gray-50 shadow-theme-xs dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                            <span class="font-bold text-brand-600 dark:text-brand-400">Agent</span>
+                            <span class="text-[10px] text-gray-400">Claim & Notes</span>
+                        </a>
+
+                        <a href="{{ route('quick.login', 'customer') }}"
+                            class="flex flex-col items-center justify-center rounded-lg border border-gray-300 bg-white p-2 text-center text-xs font-medium text-gray-700 hover:bg-gray-50 shadow-theme-xs dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                            <span class="font-bold text-gray-700 dark:text-gray-300">Customer</span>
+                            <span class="text-[10px] text-gray-400">My Tickets</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

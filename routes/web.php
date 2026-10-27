@@ -8,9 +8,7 @@ Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('local
 use App\Http\Controllers\DashboardController;
 
 // dashboard pages
-Route::get('/', function () {
-    return view('pages.dashboard.ecommerce', ['title' => 'Support Ticket Dashboard']);
-})->middleware('auth')->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
 
 // calender pages
 Route::get('/calendar', function () {
