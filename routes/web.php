@@ -9,8 +9,8 @@ use App\Http\Controllers\DashboardController;
 
 // dashboard pages
 Route::get('/', function () {
-    return view('pages.dashboard.ecommerce', ['title' => 'E-commerce Dashboard']);
-})->name('dashboard');
+    return view('pages.dashboard.ecommerce', ['title' => 'Support Ticket Dashboard']);
+})->middleware('auth')->name('dashboard');
 
 // calender pages
 Route::get('/calendar', function () {
@@ -53,14 +53,22 @@ Route::get('/bar-chart', function () {
 })->name('bar-chart');
 
 
-// authentication pages
-Route::get('/signin', function () {
-    return view('pages.auth.signin', ['title' => 'Sign In']);
-})->name('signin');
+use App\Http\Controllers\AuthController;
 
-Route::get('/signup', function () {
-    return view('pages.auth.signup', ['title' => 'Sign Up']);
-})->name('signup');
+// Authentication Guest Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/signin', [AuthController::class, 'showLogin'])->name('signin');
+    Route::post('/signin', [AuthController::class, 'login'])->name('login');
+    Route::get('/login', fn() => redirect()->route('signin'))->name('login.redirect');
+    Route::get('/signup', [AuthController::class, 'showRegister'])->name('signup');
+    Route::post('/signup', [AuthController::class, 'register'])->name('register');
+    Route::get('/quick-login/{role}', [AuthController::class, 'quickLogin'])->name('quick.login');
+});
+
+// Authenticated Routes
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
 
 // ui elements pages
 Route::get('/alerts', function () {

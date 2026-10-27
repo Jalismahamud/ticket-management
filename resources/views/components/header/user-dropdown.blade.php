@@ -66,7 +66,7 @@
             <img src="/images/user/owner.png" alt="User" />
         </span>
 
-        <span class="block mr-1 font-medium text-theme-sm rtl:mr-0 rtl:ml-1">Musharof</span>
+        <span class="block mr-1 font-medium text-theme-sm rtl:mr-0 rtl:ml-1">{{ auth()->user()?->name ?? 'User' }}</span>
 
         <!-- Chevron Down Icon -->
         <svg
@@ -102,8 +102,16 @@
     >
         <!-- User Info -->
         <div>
-            <span class="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">Musharof Chowdhury</span>
-            <span class="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">randomuser@pimjo.com</span>
+            <div class="flex items-center justify-between">
+                <span class="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">{{ auth()->user()?->name ?? 'Guest User' }}</span>
+                @if(auth()->user())
+                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium uppercase
+                        {{ auth()->user()->isAdmin() ? 'bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-400' : (auth()->user()->isAgent() ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300') }}">
+                        {{ auth()->user()->role }}
+                    </span>
+                @endif
+            </div>
+            <span class="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">{{ auth()->user()?->email ?? 'guest@example.com' }}</span>
         </div>
 
         <!-- Menu Items -->
@@ -222,17 +230,20 @@
         </ul>
 
         <!-- Sign Out -->
-        <a
-            href="/signin"
-            class="flex items-center w-full gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            @click="closeDropdown()"
-        >
-            <span class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                </svg>
-            </span>
-            Sign out
-        </a>
+        <form method="POST" action="{{ route('logout') }}" class="w-full">
+            @csrf
+            <button
+                type="submit"
+                class="flex items-center w-full gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                @click="closeDropdown()"
+            >
+                <span class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                </span>
+                Sign out
+            </button>
+        </form>
     </div>
 </div>

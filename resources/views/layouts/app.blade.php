@@ -162,6 +162,42 @@
 
     </div>
 
+    <!-- Global Toast Notifications -->
+    <x-common.toast />
+
+    <!-- SweetAlert2 & Global Confirmation Handler -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('[data-confirm]');
+            if (btn) {
+                e.preventDefault();
+                const message = btn.getAttribute('data-confirm') || 'Are you sure you want to proceed?';
+                const form = btn.closest('form');
+                Swal.fire({
+                    title: 'Confirmation',
+                    text: message,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#465fff',
+                    cancelButtonColor: '#98a2b3',
+                    confirmButtonText: 'Yes, proceed',
+                    cancelButtonText: 'Cancel',
+                    customClass: {
+                        popup: 'rounded-2xl dark:bg-gray-900 dark:text-white',
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (form) {
+                            form.submit();
+                        } else if (btn.tagName === 'A' && btn.href) {
+                            window.location.href = btn.href;
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 @stack('scripts')

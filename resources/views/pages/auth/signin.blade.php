@@ -64,14 +64,55 @@
                                     <span class="bg-white p-2 text-gray-400 sm:px-5 sm:py-2 dark:bg-gray-900">Or</span>
                                 </div>
                             </div>
-                            <form>
+                            @if (session('error'))
+                                <div class="mb-4 rounded-lg bg-error-50 p-4 text-sm text-error-700 dark:bg-error-500/10 dark:text-error-400">
+                                    {{ session('error') }}
+                                </div>
+                            @endif
+
+                            @if ($errors->any())
+                                <div class="mb-4 rounded-lg bg-error-50 p-4 text-sm text-error-700 dark:bg-error-500/10 dark:text-error-400">
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            <!-- Quick 1-Click Demo Logins for Evaluation -->
+                            <div class="mb-6 rounded-xl border border-gray-200 bg-gray-50/50 p-3.5 dark:border-gray-800 dark:bg-white/[0.02]">
+                                <span class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                    Quick Demo Logins (Password: password)
+                                </span>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <a href="{{ route('quick.login', 'admin') }}"
+                                        class="flex flex-col items-center justify-center rounded-lg border border-error-200 bg-error-50/50 py-2 text-xs font-medium text-error-700 transition hover:bg-error-100 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
+                                        <span>Admin</span>
+                                        <span class="text-[10px] opacity-75">admin@example.com</span>
+                                    </a>
+                                    <a href="{{ route('quick.login', 'agent') }}"
+                                        class="flex flex-col items-center justify-center rounded-lg border border-brand-200 bg-brand-50/50 py-2 text-xs font-medium text-brand-700 transition hover:bg-brand-100 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-400">
+                                        <span>Agent</span>
+                                        <span class="text-[10px] opacity-75">agent1@example.com</span>
+                                    </a>
+                                    <a href="{{ route('quick.login', 'customer') }}"
+                                        class="flex flex-col items-center justify-center rounded-lg border border-gray-200 bg-white py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                        <span>Customer</span>
+                                        <span class="text-[10px] opacity-75">customer1@example.com</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <form method="POST" action="{{ route('login') }}">
+                                @csrf
                                 <div class="space-y-5">
                                     <!-- Email -->
                                     <div>
-                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        <label for="email" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                             Email<span class="text-error-500">*</span>
                                         </label>
-                                        <input type="email" id="email" name="email" placeholder="info@gmail.com"
+                                        <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus placeholder="info@gmail.com"
                                             class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
                                     </div>
                                     <!-- Password -->
@@ -81,6 +122,9 @@
                                         </label>
                                         <div x-data="{ showPassword: false }" class="relative">
                                             <input :type="showPassword ? 'text' : 'password'"
+                                                id="password"
+                                                name="password"
+                                                required
                                                 placeholder="Enter your password"
                                                 class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
                                             <span @click="showPassword = !showPassword"
@@ -99,10 +143,10 @@
                                     <!-- Checkbox -->
                                     <div class="flex items-center justify-between">
                                         <div x-data="{ checkboxToggle: false }">
-                                            <label for="checkboxLabelOne"
+                                            <label for="remember"
                                                 class="flex cursor-pointer items-center text-sm font-normal text-gray-700 select-none dark:text-gray-400">
                                                 <div class="relative">
-                                                    <input type="checkbox" id="checkboxLabelOne" class="sr-only" @change="checkboxToggle = !checkboxToggle" />
+                                                    <input type="checkbox" id="remember" name="remember" value="1" class="sr-only" @change="checkboxToggle = !checkboxToggle" />
                                                     <div :class="checkboxToggle ? 'border-brand-500 bg-brand-500' :
                                                         'bg-transparent border-gray-300 dark:border-gray-700'"
                                                         class="mr-3 flex h-5 w-5 items-center justify-center rounded-md border-[1.25px]">
@@ -116,13 +160,11 @@
                                                 Keep me logged in
                                             </label>
                                         </div>
-                                        <a href="/reset-password" class="text-brand-500 hover:text-brand-600 dark:text-brand-400 text-sm">
-                                            Forgot password?
-                                        </a>
                                     </div>
                                     <!-- Button -->
                                     <div>
                                         <button
+                                            type="submit"
                                             class="bg-brand-500 shadow-theme-xs hover:bg-brand-600 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium text-white transition">
                                             Sign In
                                         </button>
