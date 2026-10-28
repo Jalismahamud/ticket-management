@@ -90,3 +90,28 @@ test('csv import service parses rows, validates fields, and ignores duplicates',
 
     fclose($tempFile);
 });
+
+test('authorized user can view dedicated printable ticket report', function () {
+    $category = Category::create(['name' => 'Hardware', 'slug' => 'hardware']);
+    $customer = User::create([
+        'name' => 'Jim Halpert',
+        'email' => 'jim@example.com',
+        'password' => bcrypt('password'),
+        'role' => User::ROLE_CUSTOMER,
+    ]);
+
+    $ticket = Ticket::create([
+        'ticket_number' => 'TKT-2026-000099',
+        'subject' => 'Broken mouse',
+        'description' => 'The optical sensor is not working.',
+        'category_id' => $category->id,
+        'created_by' => $customer->id,
+        'priority' => 'medium',
+        'status' => Ticket::STATUS_OPEN,
+    ]);
+
+    $response = $this->actingAs($customer)->get(route('tickets.print', $ticket));
+    $response->assertOk();
+    $response->assertSee('TKT-2026-000099');
+    $response->assertSee('Official Support Incident', false);
+});

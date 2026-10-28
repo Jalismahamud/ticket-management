@@ -252,6 +252,33 @@ class TicketController extends Controller
     }
 
     /**
+     * Show dedicated printable ticket report view.
+     */
+    public function print(Ticket $ticket): View
+    {
+        Gate::authorize('view', $ticket);
+
+        $ticket->load(['category', 'creator', 'assignee', 'attachments.user']);
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        $repliesQuery = $ticket->replies()->with(['user', 'attachments'])->oldest();
+        if ($user->isCustomer()) {
+            $repliesQuery->public();
+        }
+        $replies = $repliesQuery->get();
+        $activities = $ticket->activities()->with('user')->latest()->get();
+
+        return view('pages.tickets.print', [
+            'ticket' => $ticket,
+            'replies' => $replies,
+            'activities' => $activities,
+            'title' => "Ticket Report #{$ticket->ticket_number}",
+        ]);
+    }
+
+    /**
      * Show form to edit ticket.
      */
     public function edit(Ticket $ticket): View

@@ -144,20 +144,79 @@
     </script>
     
 
+    <!-- Print Stylesheet -->
+    <style media="print">
+        @page {
+            size: A4 portrait;
+            margin: 12mm 15mm 15mm 15mm;
+        }
+        html, body {
+            background-color: #ffffff !important;
+            color: #111827 !important;
+            font-size: 11pt !important;
+            line-height: 1.4 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        header, aside, #sidebar, .app-header, .no-print, [data-no-print], .swal2-container {
+            display: none !important;
+        }
+        .flex-1, .min-h-screen, div[class*="sidebar-expanded"] {
+            margin: 0 !important;
+            padding: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            display: block !important;
+        }
+        .print-break-inside-avoid {
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+        }
+        /* Ensure clean white paper appearance in print even if dark mode is active */
+        html.dark, html.dark body {
+            background-color: #ffffff !important;
+            color: #111827 !important;
+        }
+        html.dark .bg-gray-900,
+        html.dark .bg-gray-800,
+        html.dark .bg-gray-950,
+        html.dark .dark\:bg-gray-900,
+        html.dark .dark\:bg-gray-800 {
+            background-color: #ffffff !important;
+            color: #111827 !important;
+            border-color: #e5e7eb !important;
+        }
+        html.dark .text-white,
+        html.dark .dark\:text-white,
+        html.dark .dark\:text-white\/90,
+        html.dark .dark\:text-gray-200 {
+            color: #111827 !important;
+        }
+        * {
+            box-shadow: none !important;
+            text-shadow: none !important;
+        }
+    </style>
 </head>
 
 <body>
 
-    <div class="min-h-screen xl:flex sidebar-expanded" x-data :class="{ 'sidebar-expanded': $store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen }">
-        @include('layouts.backdrop')
-        @include('layouts.sidebar')
+    <div class="min-h-screen xl:flex sidebar-expanded print:block print:min-h-0" x-data :class="{ 'sidebar-expanded': $store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen }">
+        <div class="print:hidden">
+            @include('layouts.backdrop')
+            @include('layouts.sidebar')
+        </div>
 
         {{-- transition-all duration-300 ease-in-out --}}
-        <div class="flex-1 ml-0 ltr:xl:ml-[90px] rtl:xl:ml-0 rtl:xl:mr-[90px] [.sidebar-expanded_&]:ltr:xl:ml-[290px] [.sidebar-expanded_&]:rtl:xl:ml-0 [.sidebar-expanded_&]:rtl:xl:mr-[290px] transition-all duration-300 ease-in-out">
+        <div class="flex-1 ml-0 ltr:xl:ml-[90px] rtl:xl:ml-0 rtl:xl:mr-[90px] [.sidebar-expanded_&]:ltr:xl:ml-[290px] [.sidebar-expanded_&]:rtl:xl:ml-0 [.sidebar-expanded_&]:rtl:xl:mr-[290px] transition-all duration-300 ease-in-out print:!m-0 print:!p-0 print:!w-full">
             <!-- app header start -->
-            @include('layouts.app-header')
+            <div class="print:hidden">
+                @include('layouts.app-header')
+            </div>
             <!-- app header end -->
-            <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+            <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 print:!p-0 print:!m-0 print:!max-w-none print:!w-full">
                 @yield('content')
             </div>
         </div>
@@ -165,7 +224,9 @@
     </div>
 
     <!-- Global Toast Notifications -->
-    <x-common.toast />
+    <div class="print:hidden">
+        <x-common.toast />
+    </div>
 
     <!-- SweetAlert2 & Global Confirmation Handler -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -76,6 +76,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tickets/import/sample', [\App\Http\Controllers\TicketImportController::class, 'downloadSample'])->name('tickets.import.sample');
 
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
+    Route::get('/tickets/{ticket}/print', [TicketController::class, 'print'])->name('tickets.print');
     Route::get('/tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
     Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
     Route::post('/tickets/{ticket}/reply', [TicketController::class, 'reply'])->name('tickets.reply');
