@@ -45,7 +45,7 @@
         x-transition:leave="transition ease-in duration-100"
         x-transition:leave-start="transform opacity-100 scale-100"
         x-transition:leave-end="transform opacity-0 scale-95"
-        class="absolute ltr:-right-10 ltr:sm:right-0 rtl:-left-10 rtl:sm:left-0 mt-3 flex max-h-[460px] w-[340px] sm:w-[380px] flex-col rounded-2xl border border-gray-200 bg-white p-4 shadow-theme-lg dark:border-gray-800 dark:bg-gray-900 z-999"
+        class="absolute ltr:-right-12 ltr:sm:right-0 rtl:-left-12 rtl:sm:left-0 mt-3 flex max-h-[460px] w-[calc(100vw-32px)] max-w-[360px] sm:w-[380px] flex-col rounded-2xl border border-gray-200 bg-white p-4 shadow-theme-lg dark:border-gray-800 dark:bg-gray-900 z-999"
     >
         <!-- Dropdown Header -->
         <div class="flex items-center justify-between pb-3 mb-2 border-b border-gray-100 dark:border-gray-800">

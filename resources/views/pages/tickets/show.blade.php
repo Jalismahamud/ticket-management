@@ -122,7 +122,7 @@
                         </span>
                     @endif
                 </div>
-                <h2 class="mt-1 text-lg font-semibold text-gray-800 dark:text-white/90">
+                <h2 class="mt-1 text-lg font-semibold text-gray-800 dark:text-white/90 break-words">
                     {{ $ticket->subject }}
                 </h2>
             </div>
@@ -222,38 +222,9 @@
                                 @foreach ($ticket->attachments->whereNull('reply_id') as $attachment)
                                     <a href="{{ route('attachments.download', $attachment) }}"
                                         class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/5 print:border-gray-300 print:bg-white">
-                                        <svg class="size-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                        <span>{{ $attachment->file_name }}</span>
-                                        <span class="text-[10px] text-gray-400">({{ $attachment->formatted_size }})</span>
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-                </div>
-                            <div>
-                                <span class="block font-semibold text-gray-900 dark:text-white">{{ $ticket->creator->name }}</span>
-                                <span class="text-xs text-gray-500 dark:text-gray-400">Created {{ $ticket->created_at->format('M d, Y h:i A') }} ({{ $ticket->created_at->diffForHumans() }})</span>
-                            </div>
-                        </div>
-                        <span class="text-xs rounded-full bg-gray-100 px-2.5 py-1 text-gray-600 dark:bg-gray-800 dark:text-gray-400">Initial Request</span>
-                    </div>
-
-                    <div class="pt-4 text-sm leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-line">
-                        {{ $ticket->description }}
-                    </div>
-
-                    <!-- Initial Attachments -->
-                    @if ($ticket->attachments->whereNull('reply_id')->count() > 0)
-                        <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                            <span class="block text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-2">Attached Files:</span>
-                            <div class="flex flex-wrap gap-2">
-                                @foreach ($ticket->attachments->whereNull('reply_id') as $attachment)
-                                    <a href="{{ route('attachments.download', $attachment) }}"
-                                        class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/5">
-                                        <svg class="size-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                        <span>{{ $attachment->file_name }}</span>
-                                        <span class="text-[10px] text-gray-400">({{ $attachment->formatted_size }})</span>
+                                        <svg class="size-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        <span class="truncate max-w-[170px] sm:max-w-xs">{{ $attachment->file_name }}</span>
+                                        <span class="text-[10px] text-gray-400 shrink-0">({{ $attachment->formatted_size }})</span>
                                     </a>
                                 @endforeach
                             </div>
@@ -299,7 +270,7 @@
                                 @endif
                             </div>
 
-                            <div class="pt-3 text-sm leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-line">
+                            <div class="pt-3 text-sm leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-line break-words">
                                 {{ $reply->message }}
                             </div>
 
@@ -308,9 +279,9 @@
                                     @foreach ($reply->attachments as $attachment)
                                         <a href="{{ route('attachments.download', $attachment) }}"
                                             class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/5">
-                                            <svg class="size-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                            <span>{{ $attachment->file_name }}</span>
-                                            <span class="text-[10px] text-gray-400">({{ $attachment->formatted_size }})</span>
+                                            <svg class="size-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            <span class="truncate max-w-[170px] sm:max-w-xs">{{ $attachment->file_name }}</span>
+                                            <span class="text-[10px] text-gray-400 shrink-0">({{ $attachment->formatted_size }})</span>
                                         </a>
                                     @endforeach
                                 </div>

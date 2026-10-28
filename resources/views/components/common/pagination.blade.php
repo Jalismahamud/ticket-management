@@ -8,7 +8,7 @@
             of <span class="font-medium text-gray-800 dark:text-white">{{ $paginator->total() }}</span> results
         </div>
 
-        <nav class="flex items-center gap-1">
+        <nav class="flex flex-wrap items-center gap-1">
             {{-- Previous Page Link --}}
             @if ($paginator->onFirstPage())
                 <span class="inline-flex size-9 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed dark:border-gray-800 dark:bg-gray-800/40 dark:text-gray-600">

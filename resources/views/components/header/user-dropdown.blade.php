@@ -72,7 +72,7 @@
             @endif
         </span>
 
-        <span class="block mr-1 font-medium text-theme-sm rtl:mr-0 rtl:ml-1">{{ auth()->user()?->name ?? 'User' }}</span>
+        <span class="hidden sm:block mr-1 font-medium text-theme-sm rtl:mr-0 rtl:ml-1 max-w-[120px] truncate">{{ auth()->user()?->name ?? 'User' }}</span>
 
         <!-- Chevron Down Icon -->
         <svg
@@ -103,7 +103,7 @@
         x-transition:leave="transition ease-in duration-75"
         x-transition:leave-start="transform opacity-100 scale-100"
         x-transition:leave-end="transform opacity-0 scale-95"
-        class="absolute ltr:right-0 rtl:left-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark z-50"
+        class="absolute ltr:right-0 rtl:left-0 mt-[17px] flex w-[260px] max-w-[calc(100vw-32px)] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark z-50"
         style="display: none;"
     >
         <!-- User Info -->

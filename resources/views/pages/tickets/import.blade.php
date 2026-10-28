@@ -59,9 +59,9 @@
                     </div>
                 @endif
 
-                <div class="pt-3 flex justify-end gap-3">
+                <div class="pt-3 flex flex-col sm:flex-row sm:justify-end gap-3">
                     <a href="{{ route('tickets.index') }}"
-                        class="rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition">
+                        class="w-full sm:w-auto text-center rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 transition">
                         View All Tickets
                     </a>
                 </div>

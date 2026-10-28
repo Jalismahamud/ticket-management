@@ -46,37 +46,37 @@
         </div>
 
         <!-- Quick Filter Tabs -->
-        <div class="flex flex-wrap items-center gap-2 border-b border-gray-200 dark:border-gray-800 pb-2 print:hidden">
+        <div class="flex items-center gap-2 border-b border-gray-200 dark:border-gray-800 pb-2 overflow-x-auto no-scrollbar print:hidden sm:flex-wrap">
             <a href="{{ route('tickets.index', ['tab' => 'all']) }}"
-                class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition
+                class="shrink-0 whitespace-nowrap inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition
                 {{ $tab === 'all' ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5' }}">
                 <span>All Tickets</span>
                 <span class="rounded-full px-2 py-0.5 text-xs bg-gray-200/80 text-gray-700 dark:bg-gray-800 dark:text-gray-300">{{ $counts['all'] }}</span>
             </a>
 
             <a href="{{ route('tickets.index', ['tab' => 'active']) }}"
-                class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition
+                class="shrink-0 whitespace-nowrap inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition
                 {{ $tab === 'active' ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5' }}">
                 <span>Active / In Progress</span>
                 <span class="rounded-full px-2 py-0.5 text-xs bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">{{ $counts['active'] }}</span>
             </a>
 
             <a href="{{ route('tickets.index', ['tab' => 'unassigned']) }}"
-                class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition
+                class="shrink-0 whitespace-nowrap inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition
                 {{ $tab === 'unassigned' ? 'bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5' }}">
                 <span>Unassigned</span>
                 <span class="rounded-full px-2 py-0.5 text-xs bg-warning-100 text-warning-800 dark:bg-warning-500/20 dark:text-warning-300">{{ $counts['unassigned'] }}</span>
             </a>
 
             <a href="{{ route('tickets.index', ['tab' => 'breached']) }}"
-                class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition
+                class="shrink-0 whitespace-nowrap inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition
                 {{ $tab === 'breached' ? 'bg-error-50 text-error-700 dark:bg-error-500/15 dark:text-error-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5' }}">
                 <span>SLA Breached</span>
                 <span class="rounded-full px-2 py-0.5 text-xs bg-error-100 text-error-800 dark:bg-error-500/20 dark:text-error-300">{{ $counts['breached'] }}</span>
             </a>
 
             <a href="{{ route('tickets.index', ['tab' => 'resolved']) }}"
-                class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition
+                class="shrink-0 whitespace-nowrap inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition
                 {{ $tab === 'resolved' ? 'bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-400' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5' }}">
                 <span>Resolved / Closed</span>
                 <span class="rounded-full px-2 py-0.5 text-xs bg-success-100 text-success-800 dark:bg-success-500/20 dark:text-success-300">{{ $counts['resolved'] }}</span>
@@ -156,28 +156,28 @@
                 <table class="w-full text-start">
                     <thead class="border-b border-gray-200 bg-gray-50/50 text-xs font-semibold uppercase text-gray-500 dark:border-gray-800 dark:bg-white/[0.02] dark:text-gray-400">
                         <tr>
-                            <th class="px-5 py-3.5 text-start">Ticket ID</th>
-                            <th class="px-5 py-3.5 text-start">Subject & Category</th>
-                            <th class="px-5 py-3.5 text-start">Customer</th>
-                            <th class="px-5 py-3.5 text-start">Priority</th>
-                            <th class="px-5 py-3.5 text-start">Status</th>
-                            <th class="px-5 py-3.5 text-start">Assigned Agent</th>
-                            <th class="px-5 py-3.5 text-start">SLA Resolution</th>
-                            <th class="px-5 py-3.5 text-end print:hidden">Action</th>
+                            <th class="px-5 py-3.5 text-start whitespace-nowrap">Ticket ID</th>
+                            <th class="px-5 py-3.5 text-start min-w-[200px]">Subject & Category</th>
+                            <th class="px-5 py-3.5 text-start whitespace-nowrap">Customer</th>
+                            <th class="px-5 py-3.5 text-start whitespace-nowrap">Priority</th>
+                            <th class="px-5 py-3.5 text-start whitespace-nowrap">Status</th>
+                            <th class="px-5 py-3.5 text-start whitespace-nowrap">Assigned Agent</th>
+                            <th class="px-5 py-3.5 text-start whitespace-nowrap">SLA Resolution</th>
+                            <th class="px-5 py-3.5 text-end whitespace-nowrap print:hidden">Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 text-sm dark:divide-gray-800">
                         @forelse ($tickets as $ticket)
                             <tr class="transition hover:bg-gray-50/60 dark:hover:bg-white/[0.02]">
                                 <!-- Ticket ID -->
-                                <td class="px-5 py-4 font-mono font-medium text-gray-900 dark:text-white">
+                                <td class="px-5 py-4 font-mono font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                     <a href="{{ route('tickets.show', $ticket) }}" class="text-brand-500 hover:underline">
                                         {{ $ticket->ticket_number }}
                                     </a>
                                 </td>
 
                                 <!-- Subject & Category -->
-                                <td class="px-5 py-4 max-w-xs">
+                                <td class="px-5 py-4 min-w-[200px] max-w-xs">
                                     <a href="{{ route('tickets.show', $ticket) }}" class="block font-medium text-gray-800 hover:text-brand-500 dark:text-white/90 truncate">
                                         {{ $ticket->subject }}
                                     </a>
@@ -187,13 +187,13 @@
                                 </td>
 
                                 <!-- Customer -->
-                                <td class="px-5 py-4 text-gray-700 dark:text-gray-300">
+                                <td class="px-5 py-4 text-gray-700 dark:text-gray-300 whitespace-nowrap">
                                     <div class="font-medium">{{ $ticket->creator->name }}</div>
                                     <div class="text-xs text-gray-400">{{ $ticket->creator->email }}</div>
                                 </td>
 
                                 <!-- Priority Badge -->
-                                <td class="px-5 py-4">
+                                <td class="px-5 py-4 whitespace-nowrap">
                                     @php
                                         $priorityClass = match($ticket->priority) {
                                             'critical' => 'bg-error-50 text-error-700 border-error-200 dark:bg-error-500/15 dark:text-error-400 dark:border-error-500/30',
@@ -209,7 +209,7 @@
                                 </td>
 
                                 <!-- Status Badge -->
-                                <td class="px-5 py-4">
+                                <td class="px-5 py-4 whitespace-nowrap">
                                     @php
                                         $statusClass = match($ticket->status) {
                                             'open' => 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400',
@@ -227,7 +227,7 @@
                                 </td>
 
                                 <!-- Assigned Agent -->
-                                <td class="px-5 py-4">
+                                <td class="px-5 py-4 whitespace-nowrap">
                                     @if ($ticket->assignee)
                                         <div class="flex items-center gap-2">
                                             <span class="inline-flex size-6 items-center justify-center rounded-full bg-brand-100 text-xs font-medium text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
@@ -247,7 +247,7 @@
                                 </td>
 
                                 <!-- SLA Resolution Badge -->
-                                <td class="px-5 py-4">
+                                <td class="px-5 py-4 whitespace-nowrap">
                                     @if ($ticket->isTerminal())
                                         <span class="inline-flex items-center gap-1 text-xs text-success-600 dark:text-success-400">
                                             <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
