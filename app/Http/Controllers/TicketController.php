@@ -36,9 +36,10 @@ class TicketController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        $query = Ticket::query()
-            ->with(['category', 'creator', 'assignee'])
-            ->forUser($user);
+        $countsQuery = Ticket::query()->forUser($user);
+
+        $query = (clone $countsQuery)
+            ->with(['category', 'creator', 'assignee']);
 
         // 1. Tab / Status quick filters
         $tab = $request->get('tab', 'all');
