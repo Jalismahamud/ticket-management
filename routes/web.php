@@ -15,10 +15,6 @@ Route::get('/calendar', function () {
     return view('pages.calender', ['title' => 'Calendar']);
 })->name('calendar');
 
-// profile pages
-Route::get('/profile', function () {
-    return view('pages.profile', ['title' => 'Profile']);
-})->name('profile');
 
 // form pages
 Route::get('/form-elements', function () {
@@ -89,6 +85,15 @@ Route::middleware('auth')->group(function () {
 
     // Secure Attachments Download
     Route::get('/attachments/{attachment}/download', [TicketController::class, 'downloadAttachment'])->name('attachments.download');
+
+    // Profile Management
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile');
+    Route::post('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    // System Settings (Admin Only)
+    Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
 });
 
 // ui elements pages

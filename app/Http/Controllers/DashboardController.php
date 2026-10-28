@@ -19,7 +19,7 @@ class DashboardController extends Controller
         /** @var User $user */
         $user = Auth::user();
         $now = Carbon::now();
-        $warningMinutes = config('sla.approaching_warning_minutes', 120);
+        $warningMinutes = (int) \App\Models\Setting::get('sla_warning_minutes', config('sla.approaching_warning_minutes', 120));
 
         $baseQuery = Ticket::query()->forUser($user);
 
@@ -70,7 +70,7 @@ class DashboardController extends Controller
         // Recent active tickets
         $recentTickets = (clone $baseQuery)
             ->with(['category', 'creator', 'assignee'])
-            ->orderByRaw("FIELD(priority, 'critical', 'high', 'medium', 'low')")
+            ->orderByRaw("CASE priority WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4 ELSE 5 END")
             ->orderByDesc('created_at')
             ->take(5)
             ->get();

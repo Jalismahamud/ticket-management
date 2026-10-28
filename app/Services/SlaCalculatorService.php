@@ -16,7 +16,7 @@ class SlaCalculatorService
      */
     public static function calculateDeadline(string $priority, ?Carbon $from = null): Carbon
     {
-        $hours = config("sla.priorities.{$priority}", 24);
+        $hours = (int) \App\Models\Setting::get("sla_{$priority}", config("sla.priorities.{$priority}", 24));
         $totalMinutes = $hours * 60;
 
         return self::addBusinessMinutes($totalMinutes, $from ?: Carbon::now());
@@ -32,16 +32,16 @@ class SlaCalculatorService
     public static function addBusinessMinutes(int $remainingMinutes, Carbon $time): Carbon
     {
         $current = $time->copy();
-        $businessDays = config('sla.business_days', [
+        $businessDays = (array) \App\Models\Setting::get('business_days', config('sla.business_days', [
             CarbonInterface::SUNDAY,
             CarbonInterface::MONDAY,
             CarbonInterface::TUESDAY,
             CarbonInterface::WEDNESDAY,
             CarbonInterface::THURSDAY,
-        ]);
+        ]));
 
-        [$startHour, $startMinute] = explode(':', config('sla.business_hours.start', '09:00'));
-        [$endHour, $endMinute] = explode(':', config('sla.business_hours.end', '18:00'));
+        [$startHour, $startMinute] = explode(':', (string) \App\Models\Setting::get('business_start', config('sla.business_hours.start', '09:00')));
+        [$endHour, $endMinute] = explode(':', (string) \App\Models\Setting::get('business_end', config('sla.business_hours.end', '18:00')));
 
         $startHour = (int) $startHour;
         $startMinute = (int) $startMinute;
@@ -91,13 +91,13 @@ class SlaCalculatorService
      */
     public static function isBusinessDay(Carbon $date): bool
     {
-        $businessDays = config('sla.business_days', [
+        $businessDays = (array) \App\Models\Setting::get('business_days', config('sla.business_days', [
             CarbonInterface::SUNDAY,
             CarbonInterface::MONDAY,
             CarbonInterface::TUESDAY,
             CarbonInterface::WEDNESDAY,
             CarbonInterface::THURSDAY,
-        ]);
+        ]));
 
         return in_array($date->dayOfWeek, $businessDays, true);
     }

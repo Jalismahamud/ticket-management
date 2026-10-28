@@ -18,7 +18,7 @@ class TicketNumberService
     public static function generate(?Carbon $date = null): string
     {
         $year = ($date ?: Carbon::now())->format('Y');
-        $prefix = config('sla.ticket_id_prefix', 'TKT') . '-' . $year . '-';
+        $prefix = \App\Models\Setting::get('ticket_prefix', config('sla.ticket_id_prefix', 'TKT')) . '-' . $year . '-';
 
         return DB::transaction(function () use ($prefix, $year) {
             // Pessimistic lock on the latest ticket of this year to prevent sequence collisions

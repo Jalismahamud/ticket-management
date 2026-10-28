@@ -131,7 +131,7 @@ class Ticket extends Model
             return false;
         }
 
-        $approachingThresholdMinutes = config('sla.approaching_warning_minutes', 120);
+        $approachingThresholdMinutes = (int) Setting::get('sla_warning_minutes', config('sla.approaching_warning_minutes', 120));
         $diffInMinutes = Carbon::now()->diffInMinutes($this->sla_due_at, false);
 
         return $diffInMinutes > 0 && $diffInMinutes <= $approachingThresholdMinutes;
