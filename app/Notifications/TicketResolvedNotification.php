@@ -51,3 +51,4 @@ class TicketResolvedNotification extends Notification implements ShouldQueue
         ];
     }
 }
+
