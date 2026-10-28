@@ -1,0 +1,15 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sdFav" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#465FFF" />
+      <stop offset="100%" stop-color="#252DAE" />
+    </linearGradient>
+    <linearGradient id="tkFav" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#EEF2FF" />
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#sdFav)"/>
+  <path d="M7 11C7 9.89543 7.89543 9 9 9H23C24.1046 9 25 9.89543 25 11V13.8C24.0059 13.8 23.2 14.6059 23.2 15.6C23.2 16.5941 24.0059 17.4 25 17.4V20.2C25 21.3046 24.1046 22.2 23 22.2H9C7.89543 22.2 7 21.3046 7 20.2V17.4C7.99411 17.4 8.8 16.5941 8.8 15.6C8.8 14.6059 7.99411 13.8 7 13.8V11Z" fill="url(#tkFav)"/>
+  <path d="M11.5 15.6L14.2 18.2L20.5 12.8" stroke="#3641F5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
