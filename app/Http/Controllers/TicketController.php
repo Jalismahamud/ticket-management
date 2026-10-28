@@ -108,18 +108,28 @@ class TicketController extends Controller
         // Sort by latest reply or creation
         $tickets = $query->orderByDesc('created_at')->paginate(10)->withQueryString();
 
-        // Calculate counts for quick tab badges
-        $countsQuery = Ticket::forUser($user);
+        // Optimized single query for tab badges (reduces 5 queries down to 1)
+        $nowStr = Carbon::now()->toDateTimeString();
+        $tabCounts = (clone $countsQuery)
+            ->selectRaw("
+                COUNT(*) as all_count,
+                COUNT(CASE WHEN status IN ('open', 'in_progress', 'waiting_for_customer') THEN 1 END) as active_count,
+                COUNT(CASE WHEN status IN ('resolved', 'closed') THEN 1 END) as resolved_count,
+                COUNT(CASE WHEN assigned_to IS NULL THEN 1 END) as unassigned_count,
+                COUNT(CASE WHEN status NOT IN ('resolved', 'closed') AND (sla_breached_at IS NOT NULL OR (sla_due_at IS NOT NULL AND sla_due_at < ?)) THEN 1 END) as breached_count
+            ", [$nowStr])
+            ->first();
+
         $counts = [
-            'all' => (clone $countsQuery)->count(),
-            'active' => (clone $countsQuery)->active()->count(),
-            'resolved' => (clone $countsQuery)->closedOrResolved()->count(),
-            'unassigned' => (clone $countsQuery)->unassigned()->count(),
-            'breached' => (clone $countsQuery)->slaBreached()->count(),
+            'all' => (int) ($tabCounts->all_count ?? 0),
+            'active' => (int) ($tabCounts->active_count ?? 0),
+            'resolved' => (int) ($tabCounts->resolved_count ?? 0),
+            'unassigned' => (int) ($tabCounts->unassigned_count ?? 0),
+            'breached' => (int) ($tabCounts->breached_count ?? 0),
         ];
 
-        $categories = Category::active()->get();
-        $agents = User::agents()->get();
+        $categories = Category::active()->select(['id', 'name', 'slug'])->get();
+        $agents = User::agents()->select(['id', 'name', 'email', 'avatar'])->get();
 
         return view('pages.tickets.index', compact('tickets', 'categories', 'agents', 'counts', 'tab'));
     }
