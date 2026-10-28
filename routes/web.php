@@ -76,6 +76,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/tickets/import/sample', [\App\Http\Controllers\TicketImportController::class, 'downloadSample'])->name('tickets.import.sample');
 
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
+    Route::get('/tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
+    Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
     Route::post('/tickets/{ticket}/reply', [TicketController::class, 'reply'])->name('tickets.reply');
     Route::post('/tickets/{ticket}/claim', [TicketController::class, 'claim'])->name('tickets.claim');
     Route::post('/tickets/{ticket}/assign', [TicketController::class, 'assign'])->name('tickets.assign');
@@ -90,6 +92,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile');
     Route::post('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    // Notifications
+    Route::post('/notifications/mark-all-read', function () {
+        auth()->user()?->unreadNotifications->markAsRead();
+        return back()->with('success', 'All notifications marked as read.');
+    })->name('notifications.mark-all-read');
 
     // System Settings (Admin Only)
     Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');

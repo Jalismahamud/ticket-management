@@ -241,6 +241,93 @@ class TicketController extends Controller
     }
 
     /**
+     * Show form to edit ticket.
+     */
+    public function edit(Ticket $ticket): View
+    {
+        Gate::authorize('update', $ticket);
+
+        $categories = Category::all();
+        $agents = User::agents()->get();
+
+        return view('pages.tickets.edit', [
+            'ticket' => $ticket,
+            'categories' => $categories,
+            'agents' => $agents,
+            'title' => "Edit Ticket #{$ticket->ticket_number}",
+        ]);
+    }
+
+    /**
+     * Update ticket details and recalculate SLA if priority changes.
+     */
+    public function update(Request $request, Ticket $ticket): RedirectResponse
+    {
+        Gate::authorize('update', $ticket);
+
+        /** @var User $user */
+        $user = Auth::user();
+
+        $rules = [
+            'subject' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'category_id' => ['required', 'exists:categories,id'],
+        ];
+
+        if ($user->canManageTickets()) {
+            $rules['priority'] = ['required', 'in:low,medium,high,critical'];
+            $rules['assigned_to'] = ['nullable', 'exists:users,id'];
+        }
+
+        $validated = $request->validate($rules);
+
+        $oldPriority = $ticket->priority;
+        $newPriority = $validated['priority'] ?? $oldPriority;
+        $priorityChanged = $oldPriority !== $newPriority;
+
+        $updates = [
+            'subject' => $validated['subject'],
+            'description' => $validated['description'],
+            'category_id' => $validated['category_id'],
+        ];
+
+        if ($user->canManageTickets()) {
+            $updates['priority'] = $newPriority;
+            if (array_key_exists('assigned_to', $validated)) {
+                $updates['assigned_to'] = $validated['assigned_to'];
+            }
+        }
+
+        if ($priorityChanged && !$ticket->isTerminal()) {
+            $newDueAt = SlaCalculatorService::calculateDeadline($newPriority, $ticket->created_at);
+            $updates['sla_due_at'] = $newDueAt;
+            $updates['sla_breached_at'] = null;
+        }
+
+        $ticket->update($updates);
+
+        $activityDescription = "Ticket details updated by {$user->name}";
+        if ($priorityChanged) {
+            $activityDescription .= ". Priority changed from " . ucfirst($oldPriority) . " to " . ucfirst($newPriority) . " (SLA deadline updated).";
+        }
+
+        TicketActivity::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'type' => $priorityChanged ? TicketActivity::TYPE_PRIORITY_CHANGED : TicketActivity::TYPE_STATUS_CHANGED,
+            'description' => $activityDescription,
+            'properties' => [
+                'old_priority' => $oldPriority,
+                'new_priority' => $newPriority,
+                'sla_due_at' => $ticket->sla_due_at?->toDateTimeString(),
+            ],
+        ]);
+
+        return redirect()->route('tickets.show', $ticket)
+            ->with('success', "Ticket #{$ticket->ticket_number} updated successfully.");
+    }
+
+    /**
      * Add a reply or internal note to the ticket.
      */
     public function reply(Request $request, Ticket $ticket): RedirectResponse
