@@ -10,6 +10,10 @@ use App\Models\TicketActivity;
 use App\Models\TicketAttachment;
 use App\Models\TicketReply;
 use App\Models\User;
+use App\Notifications\TicketAssignedNotification;
+use App\Notifications\TicketCreatedNotification;
+use App\Notifications\TicketRepliedNotification;
+use App\Notifications\TicketResolvedNotification;
 use App\Services\SlaCalculatorService;
 use App\Services\TicketAssignmentService;
 use App\Services\TicketNumberService;
@@ -92,7 +96,20 @@ class TicketController extends Controller
             }
         }
 
-        // 7. SLA Status Filter
+        // 7. Customer / Creator Filter (For staff/admin)
+        if ($user->canManageTickets() && $request->filled('customer_id')) {
+            $query->where('created_by', $request->customer_id);
+        }
+
+        // 8. Created Date Range
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // 9. SLA Status Filter
         if ($request->filled('sla_status')) {
             match ($request->sla_status) {
                 'breached' => $query->slaBreached(),
@@ -131,8 +148,11 @@ class TicketController extends Controller
 
         $categories = Category::active()->select(['id', 'name', 'slug'])->get();
         $agents = User::agents()->select(['id', 'name', 'email', 'avatar'])->get();
+        $customers = $user->canManageTickets()
+            ? User::where('role', User::ROLE_CUSTOMER)->select(['id', 'name', 'email'])->orderBy('name')->get()
+            : collect();
 
-        return view('pages.tickets.index', compact('tickets', 'categories', 'agents', 'counts', 'tab'));
+        return view('pages.tickets.index', compact('tickets', 'categories', 'agents', 'customers', 'counts', 'tab'));
     }
 
     /**
@@ -214,7 +234,12 @@ class TicketController extends Controller
         // Automatic assignment if requested or configured
         if (!$ticket->assigned_to && ($request->boolean('auto_assign') || $user->isCustomer())) {
             $this->assignmentService->autoAssign($ticket);
+        } elseif ($ticket->assigned_to && $ticket->assignee && $ticket->assigned_to !== $user->id) {
+            $ticket->assignee->notify(new TicketAssignedNotification($ticket));
         }
+
+        // Send confirmation notification to ticket creator
+        $user->notify(new TicketCreatedNotification($ticket));
 
         return redirect()->route('tickets.show', $ticket)
             ->with('success', "Ticket #{$ticket->ticket_number} created successfully!");
@@ -424,6 +449,9 @@ class TicketController extends Controller
             $ticketUpdates['status'] = $validated['new_status'];
             if ($validated['new_status'] === Ticket::STATUS_RESOLVED) {
                 $ticketUpdates['resolved_at'] = Carbon::now();
+                if ($ticket->creator && $ticket->creator->id !== $user->id) {
+                    $ticket->creator->notify(new TicketResolvedNotification($ticket, $user));
+                }
             }
         } elseif ($user->isCustomer() && $ticket->status === Ticket::STATUS_WAITING_CUSTOMER) {
             $ticketUpdates['status'] = Ticket::STATUS_IN_PROGRESS;
@@ -440,6 +468,15 @@ class TicketController extends Controller
                 ? "Internal note added by {$user->name}"
                 : "Reply added by {$user->name}",
         ]);
+
+        // Send notifications for non-internal replies
+        if (!$isInternal) {
+            if ($user->isCustomer() && $ticket->assignee) {
+                $ticket->assignee->notify(new TicketRepliedNotification($ticket, $reply));
+            } elseif ($user->canManageTickets() && $ticket->creator && $ticket->creator->id !== $user->id) {
+                $ticket->creator->notify(new TicketRepliedNotification($ticket, $reply));
+            }
+        }
 
         $successMsg = $isInternal ? 'Internal note added successfully.' : 'Reply posted successfully.';
         return back()->with('success', $successMsg);
@@ -495,6 +532,11 @@ class TicketController extends Controller
             'type' => TicketActivity::TYPE_STATUS_CHANGED,
             'description' => 'Ticket marked as Resolved by ' . Auth::user()->name,
         ]);
+
+        // Notify ticket creator
+        if ($ticket->creator && $ticket->creator->id !== Auth::id()) {
+            $ticket->creator->notify(new TicketResolvedNotification($ticket, Auth::user()));
+        }
 
         return back()->with('success', "Ticket #{$ticket->ticket_number} has been resolved.");
     }

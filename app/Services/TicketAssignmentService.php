@@ -6,6 +6,7 @@ use App\Exceptions\TicketAlreadyAssignedException;
 use App\Models\Ticket;
 use App\Models\TicketActivity;
 use App\Models\User;
+use App\Notifications\TicketAssignedNotification;
 use Illuminate\Support\Facades\DB;
 
 class TicketAssignmentService
@@ -100,6 +101,11 @@ class TicketAssignmentService
                     'method' => $assignedBy ? 'manual_assignment' : 'auto_workload',
                 ],
             ]);
+
+            // Notify assigned agent if not self-assigned
+            if (!$assignedBy || $assignedBy->id !== $agent->id) {
+                $agent->notify(new TicketAssignedNotification($lockedTicket));
+            }
 
             return $lockedTicket;
         });

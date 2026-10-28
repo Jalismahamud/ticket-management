@@ -7,6 +7,10 @@ use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
 use App\Models\TicketActivity;
 use App\Models\User;
+use App\Notifications\TicketAssignedNotification;
+use App\Notifications\TicketCreatedNotification;
+use App\Notifications\TicketRepliedNotification;
+use App\Notifications\TicketResolvedNotification;
 use App\Services\SlaCalculatorService;
 use App\Services\TicketAssignmentService;
 use App\Services\TicketNumberService;
@@ -123,6 +127,9 @@ class TicketApiController extends Controller
             $this->assignmentService->autoAssign($ticket);
         }
 
+        // Notify ticket creator
+        $user->notify(new TicketCreatedNotification($ticket));
+
         $ticket->load(['category', 'creator', 'assignee']);
 
         return response()->json([
@@ -172,6 +179,15 @@ class TicketApiController extends Controller
             'description' => ($isInternal ? 'Internal note' : 'Reply') . " posted via API by {$user->name}",
         ]);
 
+        // Send notifications for non-internal replies
+        if (!$isInternal) {
+            if ($user->isCustomer() && $ticket->assignee) {
+                $ticket->assignee->notify(new TicketRepliedNotification($ticket, $reply));
+            } elseif ($user->canManageTickets() && $ticket->creator && $ticket->creator->id !== $user->id) {
+                $ticket->creator->notify(new TicketRepliedNotification($ticket, $reply));
+            }
+        }
+
         return response()->json([
             'success' => true,
             'message' => $isInternal ? 'Internal note added.' : 'Reply posted.',
@@ -202,6 +218,11 @@ class TicketApiController extends Controller
             'type' => TicketActivity::TYPE_STATUS_CHANGED,
             'description' => 'Ticket marked as Resolved via API by ' . Auth::user()->name,
         ]);
+
+        // Notify ticket creator
+        if ($ticket->creator && $ticket->creator->id !== Auth::id()) {
+            $ticket->creator->notify(new TicketResolvedNotification($ticket, Auth::user()));
+        }
 
         return response()->json([
             'success' => true,
