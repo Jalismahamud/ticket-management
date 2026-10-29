@@ -124,7 +124,7 @@
                             @focus="if(query.trim().length >= 2) isOpen = true"
                             placeholder="Search by ticket #, phone, email, subject..."
                             autocomplete="off"
-                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 ltr:pl-12 ltr:pr-14 rtl:pr-12 rtl:pl-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-500 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]" />
+                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 ltr:pl-12 ltr:pr-14 rtl:pr-12 rtl:pl-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-500 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[320px] 2xl:w-[420px]" />
                         <button
                             type="button"
                             tabindex="-1"

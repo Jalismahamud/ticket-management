@@ -102,7 +102,7 @@
     </script>
 </head>
 
-<body x-init="$store.sidebar.isExpanded = window.innerWidth >= 1280;
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white/90 antialiased overflow-x-hidden min-h-screen" x-init="$store.sidebar.isExpanded = window.innerWidth >= 1280;
 const checkMobile = () => {
     if (window.innerWidth < 1280) {
         $store.sidebar.setMobileOpen(false);

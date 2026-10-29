@@ -201,22 +201,22 @@
     </style>
 </head>
 
-<body>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white/90 antialiased overflow-x-hidden min-h-screen">
 
-    <div class="min-h-screen xl:flex sidebar-expanded print:block print:min-h-0" x-data :class="{ 'sidebar-expanded': $store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen }">
+    <div class="min-h-screen w-full xl:flex sidebar-expanded print:block print:min-h-0 overflow-x-clip" x-data :class="{ 'sidebar-expanded': $store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen }">
         <div class="print:hidden">
             @include('layouts.backdrop')
             @include('layouts.sidebar')
         </div>
 
         {{-- transition-all duration-300 ease-in-out --}}
-        <div class="flex-1 ml-0 ltr:xl:ml-[90px] rtl:xl:ml-0 rtl:xl:mr-[90px] [.sidebar-expanded_&]:ltr:xl:ml-[290px] [.sidebar-expanded_&]:rtl:xl:ml-0 [.sidebar-expanded_&]:rtl:xl:mr-[290px] transition-all duration-300 ease-in-out print:!m-0 print:!p-0 print:!w-full">
+        <div class="flex-1 min-w-0 w-full ml-0 ltr:xl:ml-[90px] rtl:xl:ml-0 rtl:xl:mr-[90px] [.sidebar-expanded_&]:ltr:xl:ml-[290px] [.sidebar-expanded_&]:rtl:xl:ml-0 [.sidebar-expanded_&]:rtl:xl:mr-[290px] transition-all duration-300 ease-in-out print:!m-0 print:!p-0 print:!w-full">
             <!-- app header start -->
             <div class="print:hidden">
                 @include('layouts.app-header')
             </div>
             <!-- app header end -->
-            <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 print:!p-0 print:!m-0 print:!max-w-none print:!w-full">
+            <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 print:!p-0 print:!m-0 print:!max-w-none print:!w-full min-w-0">
                 @yield('content')
             </div>
         </div>

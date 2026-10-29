@@ -194,7 +194,7 @@
         <!-- Main Layout: Left conversation & Right metadata -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 print:block print:space-y-6">
             <!-- Left: Conversation Stream (2 Columns) -->
-            <div class="space-y-6 lg:col-span-2 print:w-full print:space-y-6">
+            <div class="space-y-6 lg:col-span-2 min-w-0 print:w-full print:space-y-6">
                 <!-- Original Description Card -->
                 <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900 print:!border-gray-300 print-break-inside-avoid">
                     <div class="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800 print:border-gray-300">
@@ -363,7 +363,7 @@
             </div>
 
             <!-- Right: Metadata & Activity Audit Timeline (1 Column) -->
-            <div class="space-y-6 print:w-full print:space-y-6">
+            <div class="space-y-6 min-w-0 print:w-full print:space-y-6">
                 <!-- Ticket Details Widget (Screen Only, replaced by executive table in print) -->
                 <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900 print:hidden">
                     <h3 class="font-semibold text-gray-800 dark:text-white pb-3 border-b border-gray-100 dark:border-gray-800 text-sm uppercase tracking-wide">

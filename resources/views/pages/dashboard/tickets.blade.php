@@ -49,7 +49,7 @@
         </div>
 
         <!-- 6 KPI Metrics Grid -->
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6">
             <!-- 1. Open Tickets -->
             <a href="{{ route('tickets.index', ['tab' => 'active']) }}"
                 class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900 group">
@@ -150,7 +150,7 @@
         <!-- 2 Column Section: Left (7 Cols) & Right (5 Cols) -->
         <div class="grid grid-cols-12 gap-6">
             <!-- Left Column: Tickets by Priority & Recent Tickets -->
-            <div class="col-span-12 space-y-6 lg:col-span-7">
+            <div class="col-span-12 space-y-6 lg:col-span-7 min-w-0">
                 <!-- Tickets by Priority Card -->
                 <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
                     <div class="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
@@ -256,7 +256,7 @@
             </div>
 
             <!-- Right Column: Agent Workloads & Demo Switcher -->
-            <div class="col-span-12 space-y-6 lg:col-span-5">
+            <div class="col-span-12 space-y-6 lg:col-span-5 min-w-0">
                 <!-- Agent Workload Distribution (Staff Only) -->
                 @if(auth()->user()->canManageTickets())
                 <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">

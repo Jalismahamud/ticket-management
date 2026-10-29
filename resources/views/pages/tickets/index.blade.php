@@ -31,7 +31,7 @@
                     Manage, track, assign and resolve support tickets within SLA deadlines.
                 </p>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
                 <button type="button" onclick="window.print()"
                     class="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/5 cursor-pointer">
                     <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
@@ -90,22 +90,22 @@
                 <input type="hidden" name="tab" value="{{ $tab }}">
 
                 <!-- Primary Filters -->
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6 items-center">
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 items-center">
                     <!-- Keyword Search -->
-                    <div class="lg:col-span-2">
+                    <div class="col-span-1 sm:col-span-2 lg:col-span-3 2xl:col-span-2 min-w-0">
                         <div class="relative">
                             <span class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none text-gray-400">
                                 <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             </span>
                             <input type="text" name="search" value="{{ request('search') }}" placeholder="Search ID, subject or description..."
-                                class="h-10 w-full rounded-lg border border-gray-300 bg-transparent ps-9 pe-4 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder:text-white/30">
+                                class="h-10 w-full min-w-0 rounded-lg border border-gray-300 bg-transparent ps-9 pe-4 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder:text-white/30">
                         </div>
                     </div>
 
                     <!-- Category -->
-                    <div>
+                    <div class="min-w-0">
                         <select name="category_id"
-                            class="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                            class="h-10 w-full min-w-0 rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 truncate">
                             <option value="">All Categories</option>
                             @foreach ($categories as $cat)
                                 <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
@@ -114,9 +114,9 @@
                     </div>
 
                     <!-- Priority -->
-                    <div>
+                    <div class="min-w-0">
                         <select name="priority"
-                            class="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                            class="h-10 w-full min-w-0 rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 truncate">
                             <option value="">All Priorities</option>
                             <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>Low (48h)</option>
                             <option value="medium" {{ request('priority') === 'medium' ? 'selected' : '' }}>Medium (24h)</option>
@@ -126,9 +126,9 @@
                     </div>
 
                     <!-- SLA Status -->
-                    <div>
+                    <div class="min-w-0">
                         <select name="sla_status"
-                            class="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                            class="h-10 w-full min-w-0 rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 truncate">
                             <option value="">All SLA Statuses</option>
                             <option value="within_sla" {{ request('sla_status') === 'within_sla' ? 'selected' : '' }}>Within SLA</option>
                             <option value="approaching" {{ request('sla_status') === 'approaching' ? 'selected' : '' }}>Approaching Breach</option>
@@ -137,19 +137,19 @@
                     </div>
 
                     <!-- Actions -->
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 min-w-0 col-span-1 sm:col-span-2 lg:col-span-3 2xl:col-span-1">
                         <button type="submit"
-                            class="h-10 flex-1 rounded-lg bg-gray-900 px-3 text-sm font-medium text-white transition hover:bg-gray-800 dark:bg-brand-500 dark:hover:bg-brand-600">
+                            class="h-10 flex-1 min-w-[70px] rounded-lg bg-gray-900 px-3 text-sm font-medium text-white transition hover:bg-gray-800 dark:bg-brand-500 dark:hover:bg-brand-600">
                             Filter
                         </button>
                         <button type="button" @click="showAdvanced = !showAdvanced"
-                            class="inline-flex h-10 items-center justify-center rounded-lg border border-gray-300 px-2.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 cursor-pointer"
+                            class="inline-flex h-10 items-center justify-center rounded-lg border border-gray-300 px-2.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 cursor-pointer shrink-0"
                             :title="showAdvanced ? 'Hide Advanced Filters' : 'Show Advanced Filters'">
                             <svg class="size-4 transition-transform duration-200" :class="{ 'rotate-180': showAdvanced }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         @if (request()->hasAny(['search', 'category_id', 'priority', 'status', 'assigned_to', 'customer_id', 'date_from', 'date_to', 'sla_status']))
                             <a href="{{ route('tickets.index', ['tab' => $tab]) }}"
-                                class="inline-flex h-10 items-center justify-center rounded-lg border border-gray-300 px-2.5 text-xs text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-white/5"
+                                class="inline-flex h-10 items-center justify-center rounded-lg border border-gray-300 px-2.5 text-xs text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-white/5 shrink-0"
                                 title="Clear Filters">
                                 Reset
                             </a>
@@ -160,10 +160,10 @@
                 <!-- Advanced Filters (Agent, Customer, Date Range) -->
                 <div x-show="showAdvanced" x-transition class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 pt-3 border-t border-gray-100 dark:border-gray-800 mt-3">
                     <!-- Assigned Agent -->
-                    <div>
+                    <div class="min-w-0">
                         <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Assigned Agent</label>
                         <select name="assigned_to"
-                            class="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                            class="h-10 w-full min-w-0 rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
                             <option value="">All Agents</option>
                             <option value="unassigned" {{ request('assigned_to') === 'unassigned' ? 'selected' : '' }}>Unassigned</option>
                             @foreach ($agents as $agent)
@@ -174,10 +174,10 @@
 
                     @if(auth()->user()->canManageTickets() && isset($customers) && $customers->isNotEmpty())
                     <!-- Customer Filter (Staff only) -->
-                    <div>
+                    <div class="min-w-0">
                         <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Customer</label>
                         <select name="customer_id"
-                            class="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                            class="h-10 w-full min-w-0 rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
                             <option value="">All Customers</option>
                             @foreach ($customers as $c)
                                 <option value="{{ $c->id }}" {{ request('customer_id') == $c->id ? 'selected' : '' }}>{{ $c->name }} ({{ $c->email }})</option>
@@ -187,26 +187,26 @@
                     @endif
 
                     <!-- Date From -->
-                    <div>
+                    <div class="min-w-0">
                         <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Created Date (From)</label>
                         <input type="date" name="date_from" value="{{ request('date_from') }}"
-                            class="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                            class="h-10 w-full min-w-0 rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
                     </div>
 
                     <!-- Date To -->
-                    <div>
+                    <div class="min-w-0">
                         <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Created Date (To)</label>
                         <input type="date" name="date_to" value="{{ request('date_to') }}"
-                            class="h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                            class="h-10 w-full min-w-0 rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-700 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
                     </div>
                 </div>
             </form>
         </div>
 
         <!-- Tickets Table Card -->
-        <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
-            <div class="overflow-x-auto">
-                <table class="w-full text-start">
+        <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-gray-900 w-full min-w-0">
+            <div class="overflow-x-auto w-full custom-scrollbar">
+                <table class="w-full text-start min-w-[800px]">
                     <thead class="border-b border-gray-200 bg-gray-50/50 text-xs font-semibold uppercase text-gray-500 dark:border-gray-800 dark:bg-white/[0.02] dark:text-gray-400">
                         <tr>
                             <th class="px-5 py-3.5 text-start whitespace-nowrap">Ticket ID</th>
