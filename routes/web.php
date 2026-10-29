@@ -98,11 +98,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
 
-    // Notifications
-    Route::post('/notifications/mark-all-read', function () {
-        auth()->user()?->unreadNotifications->markAsRead();
-        return back()->with('success', 'All notifications marked as read.');
-    })->name('notifications.mark-all-read');
+    // Notifications (Dynamic Real-Time & AJAX)
+    Route::get('/notifications/fetch', [\App\Http\Controllers\NotificationController::class, 'fetch'])->name('notifications.fetch');
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::post('/notifications/clear-read', [\App\Http\Controllers\NotificationController::class, 'clearRead'])->name('notifications.clear-read');
 
     // System Settings (Admin Only)
     Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
