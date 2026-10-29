@@ -65,6 +65,10 @@ use App\Http\Controllers\TicketController;
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+    // Global Header Search
+    Route::get('/search', [\App\Http\Controllers\SearchController::class, 'handle'])->name('global.search');
+    Route::get('/search/live', [\App\Http\Controllers\SearchController::class, 'live'])->name('global.search.live');
+
     // Ticket Management Routes
     Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');

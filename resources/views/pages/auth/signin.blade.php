@@ -43,53 +43,93 @@
                                 </div>
                             @endif
 
-                            <!-- Quick 1-Click Demo Logins for Evaluation -->
-                            <div class="mb-6 rounded-xl border border-gray-200 bg-gray-50/50 p-3.5 dark:border-gray-800 dark:bg-white/[0.02]">
-                                <span class="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                                    Quick Demo Logins (Password: password)
-                                </span>
-                                <div class="grid grid-cols-3 gap-2">
-                                    <a href="{{ route('quick.login', 'admin') }}"
-                                        class="flex flex-col items-center justify-center rounded-lg border border-error-200 bg-error-50/50 py-2 text-xs font-medium text-error-700 transition hover:bg-error-100 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400">
-                                        <span>Admin</span>
-                                        <span class="text-[10px] opacity-75">admin@example.com</span>
-                                    </a>
-                                    <a href="{{ route('quick.login', 'agent') }}"
-                                        class="flex flex-col items-center justify-center rounded-lg border border-brand-200 bg-brand-50/50 py-2 text-xs font-medium text-brand-700 transition hover:bg-brand-100 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-400">
-                                        <span>Agent</span>
-                                        <span class="text-[10px] opacity-75">agent1@example.com</span>
-                                    </a>
-                                    <a href="{{ route('quick.login', 'customer') }}"
-                                        class="flex flex-col items-center justify-center rounded-lg border border-gray-200 bg-white py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                                        <span>Customer</span>
-                                        <span class="text-[10px] opacity-75">customer1@example.com</span>
-                                    </a>
-                                </div>
-                            </div>
-
-                            <form method="POST" action="{{ route('login') }}">
-                                @csrf
-                                <div class="space-y-5">
-                                    <!-- Email -->
-                                    <div>
-                                        <label for="email" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                            Email<span class="text-error-500">*</span>
-                                        </label>
-                                        <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus placeholder="info@gmail.com"
-                                            class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
+                            <div x-data="{
+                                email: '{{ old('email', '') }}',
+                                password: '',
+                                selectedRole: '',
+                                fillCredentials(role, emailVal, passwordVal) {
+                                    this.selectedRole = role;
+                                    this.email = emailVal;
+                                    this.password = passwordVal;
+                                    this.$nextTick(() => {
+                                        const emailField = document.getElementById('email');
+                                        if (emailField) {
+                                            emailField.focus();
+                                            emailField.select();
+                                        }
+                                    });
+                                }
+                            }">
+                                <!-- Quick Demo Logins for Evaluation -->
+                                <div class="mb-6 rounded-xl border border-gray-200 bg-gray-50/50 p-3.5 dark:border-gray-800 dark:bg-white/[0.02]">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="block text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                            Quick Demo Logins (Click to Autofill)
+                                        </span>
+                                        <span class="text-[11px] text-brand-600 dark:text-brand-400 font-medium" x-show="selectedRole" x-cloak>
+                                            <span x-text="selectedRole.toUpperCase()"></span> Selected
+                                        </span>
                                     </div>
-                                    <!-- Password -->
-                                    <div>
-                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                            Password<span class="text-error-500">*</span>
-                                        </label>
-                                        <div x-data="{ showPassword: false }" class="relative">
-                                            <input :type="showPassword ? 'text' : 'password'"
-                                                id="password"
-                                                name="password"
-                                                required
-                                                placeholder="Enter your password"
-                                                class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <button type="button"
+                                            @click="fillCredentials('admin', 'admin@example.com', 'password')"
+                                            class="flex flex-col items-center justify-center rounded-lg border py-2 text-xs font-medium transition cursor-pointer text-center"
+                                            :class="selectedRole === 'admin'
+                                                ? 'border-error-500 bg-error-100 ring-2 ring-error-500/30 text-error-800 dark:bg-error-500/20 dark:text-error-300'
+                                                : 'border-error-200 bg-error-50/50 text-error-700 hover:bg-error-100 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-400'">
+                                            <span class="font-bold">Admin</span>
+                                            <span class="text-[10px] opacity-75">admin@example.com</span>
+                                        </button>
+                                        <button type="button"
+                                            @click="fillCredentials('agent', 'agent1@example.com', 'password')"
+                                            class="flex flex-col items-center justify-center rounded-lg border py-2 text-xs font-medium transition cursor-pointer text-center"
+                                            :class="selectedRole === 'agent'
+                                                ? 'border-brand-500 bg-brand-100 ring-2 ring-brand-500/30 text-brand-800 dark:bg-brand-500/20 dark:text-brand-300'
+                                                : 'border-brand-200 bg-brand-50/50 text-brand-700 hover:bg-brand-100 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-400'">
+                                            <span class="font-bold">Agent</span>
+                                            <span class="text-[10px] opacity-75">agent1@example.com</span>
+                                        </button>
+                                        <button type="button"
+                                            @click="fillCredentials('customer', 'customer1@example.com', 'password')"
+                                            class="flex flex-col items-center justify-center rounded-lg border py-2 text-xs font-medium transition cursor-pointer text-center"
+                                            :class="selectedRole === 'customer'
+                                                ? 'border-gray-500 bg-gray-200 ring-2 ring-gray-500/30 text-gray-900 dark:bg-gray-700 dark:text-white'
+                                                : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300'">
+                                            <span class="font-bold">Customer</span>
+                                            <span class="text-[10px] opacity-75">customer1@example.com</span>
+                                        </button>
+                                    </div>
+                                    <p class="text-[11px] text-gray-400 mt-2 text-center">
+                                        Clicking a role autofills and selects the input fields below. Password: <span class="font-mono font-medium text-gray-600 dark:text-gray-300">password</span>
+                                    </p>
+                                </div>
+
+                                <form method="POST" action="{{ route('login') }}">
+                                    @csrf
+                                    <div class="space-y-5">
+                                        <!-- Email -->
+                                        <div>
+                                            <label for="email" class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                                Email<span class="text-error-500">*</span>
+                                            </label>
+                                            <input type="email" id="email" name="email" x-model="email" value="{{ old('email') }}" required autofocus placeholder="info@gmail.com"
+                                                class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 transition"
+                                                :class="{ 'border-brand-500 ring-1 ring-brand-500/30': selectedRole !== '' }" />
+                                        </div>
+                                        <!-- Password -->
+                                        <div>
+                                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                                Password<span class="text-error-500">*</span>
+                                            </label>
+                                            <div x-data="{ showPassword: false }" class="relative">
+                                                <input :type="showPassword ? 'text' : 'password'"
+                                                    id="password"
+                                                    name="password"
+                                                    x-model="password"
+                                                    required
+                                                    placeholder="Enter your password"
+                                                    class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-11 pl-4 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 transition"
+                                                    :class="{ 'border-brand-500 ring-1 ring-brand-500/30': selectedRole !== '' }" />
                                             <span @click="showPassword = !showPassword"
                                                 class="absolute top-1/2 right-4 z-30 -translate-y-1/2 cursor-pointer text-gray-500 dark:text-gray-400">
                                                 <svg x-show="!showPassword" class="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -134,6 +174,7 @@
                                     </div>
                                 </div>
                             </form>
+                            </div>
                             <div class="mt-5">
                                 <p class="text-center text-sm font-normal text-gray-700 sm:text-start dark:text-gray-400">
                                     Don't have an account?

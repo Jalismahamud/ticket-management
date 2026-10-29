@@ -15,7 +15,7 @@ class AuthController extends Controller
     public function showLogin(): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->to($this->redirectPathForUser(Auth::user()));
         }
 
         return view('pages.auth.signin', [
@@ -35,7 +35,10 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            if (!Auth::user()->is_active) {
+            /** @var User $user */
+            $user = Auth::user();
+
+            if (!$user->is_active) {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
@@ -45,8 +48,10 @@ class AuthController extends Controller
                 ]);
             }
 
-            return redirect()->intended(route('dashboard'))
-                ->with('success', 'Welcome back, ' . Auth::user()->name . '!');
+            $targetRoute = $this->redirectPathForUser($user);
+
+            return redirect()->intended($targetRoute)
+                ->with('success', 'Welcome back, ' . $user->name . '!');
         }
 
         return back()->withInput($request->only('email'))
@@ -58,7 +63,7 @@ class AuthController extends Controller
     public function showRegister(): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->to($this->redirectPathForUser(Auth::user()));
         }
 
         return view('pages.auth.signup', [
@@ -86,8 +91,10 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Account created successfully! Welcome to the Support Portal.');
+        $targetRoute = $this->redirectPathForUser($user);
+
+        return redirect()->to($targetRoute)
+            ->with('success', 'Account created successfully! Welcome to your Support Portal.');
     }
 
     public function logout(Request $request): RedirectResponse
@@ -120,7 +127,22 @@ class AuthController extends Controller
         Auth::login($user);
         request()->session()->regenerate();
 
-        return redirect()->route('dashboard')
-            ->with('success', "Logged in as {$user->name} ({$user->role})");
+        $targetRoute = $this->redirectPathForUser($user);
+
+        return redirect()->to($targetRoute)
+            ->with('success', "Logged in as {$user->name} (" . ucfirst($user->role) . ")");
+    }
+
+    /**
+     * Determine role-specific dashboard redirect target
+     */
+    public function redirectPathForUser(User $user): string
+    {
+        return match ($user->role) {
+            User::ROLE_ADMIN => route('dashboard'),
+            User::ROLE_AGENT => route('dashboard'),
+            User::ROLE_CUSTOMER => route('tickets.index'),
+            default => route('dashboard'),
+        };
     }
 }

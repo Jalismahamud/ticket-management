@@ -65,40 +65,200 @@
                 </svg>
             </button>
 
-            <!-- Search Bar (desktop only) -->
-            <div class="hidden xl:block">
-                <form>
+            <!-- Global Header Search Bar with Live Results -->
+            <div class="relative hidden xl:block"
+                x-data="{
+                    query: '',
+                    results: { tickets: [], users: [], total: 0 },
+                    isOpen: false,
+                    isLoading: false,
+                    async search() {
+                        const q = this.query.trim();
+                        if (q.length < 2) {
+                            this.results = { tickets: [], users: [], total: 0 };
+                            this.isOpen = false;
+                            return;
+                        }
+                        this.isLoading = true;
+                        try {
+                            const res = await fetch(`{{ route('global.search.live') }}?q=${encodeURIComponent(q)}`, {
+                                headers: { 'Accept': 'application/json' }
+                            });
+                            if (res.ok) {
+                                this.results = await res.json();
+                                this.isOpen = true;
+                            }
+                        } catch (err) {
+                            console.error('Search error:', err);
+                        } finally {
+                            this.isLoading = false;
+                        }
+                    },
+                    close() {
+                        this.isOpen = false;
+                    }
+                }"
+                @click.outside="close()"
+                @keydown.escape.window="close()"
+                @keydown.window.prevent.cmd.k="$refs.headerSearchInput.focus()"
+                @keydown.window.prevent.ctrl.k="$refs.headerSearchInput.focus()">
+                <form method="GET" action="{{ route('global.search') }}">
                     <div class="relative">
-                        <span class="absolute -translate-y-1/2 pointer-events-none ltr:left-4 rtl:right-4 top-1/2">
-                            <!-- Search Icon -->
-                            <svg class="fill-gray-500 dark:fill-gray-400" width="20" height="20"
-                                viewBox="0 0 20 20" fill="none">
+                        <span class="absolute -translate-y-1/2 pointer-events-none ltr:left-4 rtl:right-4 top-1/2 text-gray-500 dark:text-gray-400">
+                            <!-- Search Icon / Loading Spinner -->
+                            <svg x-show="!isLoading" width="20" height="20" viewBox="0 0 20 20" fill="none">
                                 <path fill-rule="evenodd" clip-rule="evenodd"
                                     d="M3.04175 9.37363C3.04175 5.87693 5.87711 3.04199 9.37508 3.04199C12.8731 3.04199 15.7084 5.87693 15.7084 9.37363C15.7084 12.8703 12.8731 15.7053 9.37508 15.7053C5.87711 15.7053 3.04175 12.8703 3.04175 9.37363ZM9.37508 1.54199C5.04902 1.54199 1.54175 5.04817 1.54175 9.37363C1.54175 13.6991 5.04902 17.2053 9.37508 17.2053C11.2674 17.2053 13.003 16.5344 14.357 15.4176L17.177 18.238C17.4699 18.5309 17.9448 18.5309 18.2377 18.238C18.5306 17.9451 18.5306 17.4703 18.2377 17.1774L15.418 14.3573C16.5365 13.0033 17.2084 11.2669 17.2084 9.37363C17.2084 5.04817 13.7011 1.54199 9.37508 1.54199Z"
-                                    fill="" />
+                                    fill="currentColor" />
+                            </svg>
+                            <svg x-show="isLoading" class="animate-spin text-brand-500" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                             </svg>
                         </span>
                         <input type="text"
-                            x-ref="searchInput"
-                            placeholder="Search or type command..."
-                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 ltr:pl-12 ltr:pr-14 rtl:pr-12 rtl:pl-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]" />
+                            name="q"
+                            x-ref="headerSearchInput"
+                            x-model="query"
+                            @input.debounce.250ms="search()"
+                            @focus="if(query.trim().length >= 2) isOpen = true"
+                            placeholder="Search by ticket #, phone, email, subject..."
+                            autocomplete="off"
+                            class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 ltr:pl-12 ltr:pr-14 rtl:pr-12 rtl:pl-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-500 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:bg-white/3 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]" />
                         <button
                             type="button"
                             tabindex="-1"
-                            @click="$refs.searchInput?.focus()"
-                            class="absolute ltr:right-2.5 rtl:left-2.5 top-1/2 inline-flex -translate-y-1/2 items-center gap-0.5 rounded-lg border border-gray-200 bg-gray-50 px-[7px] py-[4.5px] text-xs -tracking-[0.2px] text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400">
+                            @click="$refs.headerSearchInput?.focus()"
+                            class="absolute ltr:right-2.5 rtl:left-2.5 top-1/2 inline-flex -translate-y-1/2 items-center gap-0.5 rounded-lg border border-gray-200 bg-gray-50 px-[7px] py-[4.5px] text-xs -tracking-[0.2px] text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400 cursor-pointer">
                             <span> ⌘ </span>
                             <span> K </span>
                         </button>
                     </div>
                 </form>
+
+                <!-- Live Results Dropdown -->
+                <div x-show="isOpen"
+                    x-transition:enter="transition ease-out duration-150"
+                    x-transition:enter-start="opacity-0 translate-y-1"
+                    x-transition:enter-end="opacity-100 translate-y-0"
+                    x-transition:leave="transition ease-in duration-100"
+                    x-transition:leave-start="opacity-100 translate-y-0"
+                    x-transition:leave-end="opacity-0 translate-y-1"
+                    x-cloak
+                    class="absolute start-0 mt-2 w-[480px] max-h-[440px] overflow-y-auto rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-900 z-99999 divide-y divide-gray-100 dark:divide-gray-800 no-scrollbar">
+
+                    <!-- Tickets Section -->
+                    <template x-if="results.tickets && results.tickets.length > 0">
+                        <div class="pb-2">
+                            <span class="block px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                                Support Tickets (<span x-text="results.tickets.length"></span>)
+                            </span>
+                            <div class="mt-1 space-y-1">
+                                <template x-for="item in results.tickets" :key="item.id">
+                                    <a :href="item.url"
+                                        class="flex items-start gap-3 rounded-lg p-2 transition hover:bg-gray-50 dark:hover:bg-white/[0.03] group">
+                                        <div class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+                                            <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-mono text-xs font-bold text-gray-900 dark:text-white" x-text="item.ticket_number"></span>
+                                                <span class="rounded-full px-1.5 py-0.2 text-[10px] font-semibold uppercase"
+                                                    :class="{
+                                                        'bg-error-50 text-error-700 dark:bg-error-500/15 dark:text-error-400': item.priority === 'critical',
+                                                        'bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400': item.priority === 'high',
+                                                        'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-400': item.priority === 'medium',
+                                                        'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300': item.priority === 'low'
+                                                    }"
+                                                    x-text="item.priority"></span>
+                                                <span class="rounded-full px-1.5 py-0.2 text-[10px] font-medium capitalize bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                                                    x-text="item.status.replace('_', ' ')"></span>
+                                            </div>
+                                            <p class="mt-0.5 text-xs text-gray-800 dark:text-gray-200 truncate font-medium group-hover:text-brand-600 dark:group-hover:text-brand-400" x-text="item.subject"></p>
+                                            <div class="mt-0.5 flex items-center gap-2 text-[11px] text-gray-400">
+                                                <span x-text="item.category"></span>
+                                                <span>•</span>
+                                                <span x-text="item.creator"></span>
+                                                <span x-show="item.creator_email" class="truncate" x-text="'(' + item.creator_email + ')'"></span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Users / Contacts Section (Staff Only) -->
+                    <template x-if="results.users && results.users.length > 0">
+                        <div class="pt-2 pb-1">
+                            <span class="block px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                                Customers & Contacts (<span x-text="results.users.length"></span>)
+                            </span>
+                            <div class="mt-1 space-y-1">
+                                <template x-for="user in results.users" :key="user.id">
+                                    <a :href="user.url"
+                                        class="flex items-center justify-between rounded-lg p-2 transition hover:bg-gray-50 dark:hover:bg-white/[0.03] group">
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="flex size-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                                x-text="user.name.charAt(0)"></div>
+                                            <div>
+                                                <span class="block text-xs font-medium text-gray-800 dark:text-gray-200 group-hover:text-brand-600 dark:group-hover:text-brand-400" x-text="user.name"></span>
+                                                <span class="block text-[11px] text-gray-400" x-text="user.email"></span>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                                                x-text="user.tickets_count + ' tickets'"></span>
+                                        </div>
+                                    </a>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Empty State -->
+                    <template x-if="results.total === 0 && !isLoading && query.trim().length >= 2">
+                        <div class="py-6 text-center">
+                            <svg class="mx-auto size-8 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <p class="mt-2 text-xs font-medium text-gray-600 dark:text-gray-400">
+                                No tickets, emails or phone numbers found for "<span class="font-bold text-gray-800 dark:text-white" x-text="query"></span>"
+                            </p>
+                            <p class="mt-1 text-[11px] text-gray-400">
+                                Press Enter to search all tickets
+                            </p>
+                        </div>
+                    </template>
+
+                    <!-- Footer Action -->
+                    <div class="pt-2 px-1">
+                        <button type="submit"
+                            class="flex w-full items-center justify-between rounded-lg p-2 text-xs font-medium text-gray-600 transition hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/[0.05]">
+                            <span>View all results for "<span class="font-semibold text-gray-800 dark:text-white" x-text="query"></span>"</span>
+                            <span class="text-[11px] text-gray-400">Press ↵</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Application Menu (mobile) and Right Side Actions (desktop) -->
-        <div :class="isApplicationMenuOpen ? 'flex' : 'hidden'"
-            class="items-center justify-between w-full gap-4 px-5 py-4 xl:flex shadow-theme-md xl:justify-end xl:px-0 xl:shadow-none">
-            <div class="flex items-center gap-2 2xsm:gap-3">
+        <div :class="isApplicationMenuOpen ? 'flex flex-col xl:flex-row' : 'hidden xl:flex'"
+            class="items-center justify-between w-full gap-4 px-5 py-4 shadow-theme-md xl:justify-end xl:px-0 xl:shadow-none">
+            
+            <!-- Mobile Search Bar (visible on mobile when menu opened) -->
+            <div class="w-full xl:hidden">
+                <form method="GET" action="{{ route('global.search') }}">
+                    <div class="relative">
+                        <span class="absolute -translate-y-1/2 pointer-events-none ltr:left-3.5 rtl:right-3.5 top-1/2 text-gray-400">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.04175 9.37363C3.04175 5.87693 5.87711 3.04199 9.37508 3.04199C12.8731 3.04199 15.7084 5.87693 15.7084 9.37363C15.7084 12.8703 12.8731 15.7053 9.37508 15.7053C5.87711 15.7053 3.04175 12.8703 3.04175 9.37363ZM9.37508 1.54199C5.04902 1.54199 1.54175 5.04817 1.54175 9.37363C1.54175 13.6991 5.04902 17.2053 9.37508 17.2053C11.2674 17.2053 13.003 16.5344 14.357 15.4176L17.177 18.238C17.4699 18.5309 17.9448 18.5309 18.2377 18.238C18.5306 17.9451 18.5306 17.4703 18.2377 17.1774L15.418 14.3573C16.5365 13.0033 17.2084 11.2669 17.2084 9.37363C17.2084 5.04817 13.7011 1.54199 9.37508 1.54199Z" fill="currentColor"/></svg>
+                        </span>
+                        <input type="text" name="q" placeholder="Search ticket #, email, phone..."
+                            class="h-10 w-full rounded-lg border border-gray-200 bg-gray-50 ltr:pl-10 ltr:pr-4 rtl:pr-10 rtl:pl-4 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-500 focus:outline-hidden dark:border-gray-800 dark:bg-gray-800 dark:text-white" />
+                    </div>
+                </form>
+            </div>
+
+            <div class="flex items-center gap-2 2xsm:gap-3 w-full justify-between xl:w-auto xl:justify-start">
                 <!-- Theme Toggle Button -->
                 <button
                     class="relative flex items-center justify-center text-gray-500 transition-colors bg-white border border-gray-200 rounded-full hover:text-dark-900 h-11 w-11 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"

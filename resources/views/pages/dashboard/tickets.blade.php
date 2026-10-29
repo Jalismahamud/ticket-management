@@ -24,10 +24,10 @@
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between print:hidden">
             <div>
                 <h1 class="text-title-md font-semibold text-gray-800 dark:text-white/90">
-                    Support Ticket & SLA Dashboard
+                    {{ auth()->user()->isCustomer() ? 'My Support Portal Dashboard' : 'Support Ticket & SLA Dashboard' }}
                 </h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Real-time overview of ticket assignments, resolution workloads, and SLA compliance.
+                    {{ auth()->user()->isCustomer() ? 'Track your active support requests, ticket statuses, and submit new inquiries.' : 'Real-time overview of ticket assignments, resolution workloads, and SLA compliance.' }}
                 </p>
             </div>
             <div class="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -54,7 +54,9 @@
             <a href="{{ route('tickets.index', ['tab' => 'active']) }}"
                 class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900 group">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Open Tickets</span>
+                    <span class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">
+                        {{ auth()->user()->isCustomer() ? 'My Open Tickets' : 'Open Tickets' }}
+                    </span>
                     <span class="flex size-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
                         <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     </span>
@@ -65,18 +67,22 @@
                 </div>
             </a>
 
-            <!-- 2. Unassigned -->
+            <!-- 2. Unassigned / Pending Assignment -->
             <a href="{{ route('tickets.index', ['tab' => 'unassigned']) }}"
                 class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900 group">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Unassigned</span>
+                    <span class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">
+                        {{ auth()->user()->isCustomer() ? 'Pending Assignment' : 'Unassigned' }}
+                    </span>
                     <span class="flex size-8 items-center justify-center rounded-lg bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400">
                         <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                     </span>
                 </div>
                 <div class="mt-3 flex items-baseline gap-2">
                     <span class="text-2xl font-bold text-gray-900 dark:text-white">{{ $metrics->unassigned_count ?? 0 }}</span>
-                    <span class="text-xs text-warning-600 dark:text-warning-400">needs agent</span>
+                    <span class="text-xs {{ auth()->user()->isCustomer() ? 'text-gray-400' : 'text-warning-600 dark:text-warning-400' }}">
+                        {{ auth()->user()->isCustomer() ? 'awaiting agent' : 'needs agent' }}
+                    </span>
                 </div>
             </a>
 
@@ -251,7 +257,8 @@
 
             <!-- Right Column: Agent Workloads & Demo Switcher -->
             <div class="col-span-12 space-y-6 lg:col-span-5">
-                <!-- Agent Workload Distribution -->
+                <!-- Agent Workload Distribution (Staff Only) -->
+                @if(auth()->user()->canManageTickets())
                 <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
                     <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
                         <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
@@ -284,6 +291,40 @@
                         @endforelse
                     </div>
                 </div>
+                @else
+                <!-- Customer Support Guidance Card -->
+                <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-800">
+                        <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                            Customer Support Portal
+                        </h2>
+                        <span class="text-xs text-brand-500 font-medium">Active SLA Guaranteed</span>
+                    </div>
+
+                    <div class="mt-4 space-y-3">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                            Need help with your services or technical issues? Create a support ticket and our engineering team will assist you within your SLA resolution window.
+                        </p>
+                        <div class="grid grid-cols-2 gap-2 text-[11px] pt-1">
+                            <div class="rounded-lg bg-gray-50 dark:bg-white/[0.02] p-2 border border-gray-100 dark:border-gray-800">
+                                <span class="font-bold text-error-600 block">Critical: 2h</span>
+                                <span class="text-gray-400">System Outage</span>
+                            </div>
+                            <div class="rounded-lg bg-gray-50 dark:bg-white/[0.02] p-2 border border-gray-100 dark:border-gray-800">
+                                <span class="font-bold text-orange-600 block">High: 8h</span>
+                                <span class="text-gray-400">Major Degradation</span>
+                            </div>
+                        </div>
+                        <div class="pt-2">
+                            <a href="{{ route('tickets.create') }}"
+                                class="flex items-center justify-center gap-2 w-full rounded-lg bg-brand-500 px-4 py-2.5 text-xs font-semibold text-white shadow-theme-xs hover:bg-brand-600 transition">
+                                <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                Submit New Ticket
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @endif
 
                 <!-- Evaluator Demo Switcher Widget (Hidden on Print) -->
                 <div class="rounded-2xl border border-brand-200 bg-brand-50/30 p-6 shadow-theme-xs dark:border-brand-500/20 dark:bg-brand-500/5 print:hidden">
