@@ -45,4 +45,17 @@ class Category extends Model
     {
         return $query->where('is_active', true);
     }
+
+    public static function cachedActive()
+    {
+        return \Illuminate\Support\Facades\Cache::remember('categories_active', 3600, function () {
+            return static::active()->select(['id', 'name', 'slug'])->get();
+        });
+    }
+
+    protected static function booted()
+    {
+        static::saved(fn () => \Illuminate\Support\Facades\Cache::forget('categories_active'));
+        static::deleted(fn () => \Illuminate\Support\Facades\Cache::forget('categories_active'));
+    }
 }

@@ -146,7 +146,7 @@ class TicketController extends Controller
             'breached' => (int) ($tabCounts->breached_count ?? 0),
         ];
 
-        $categories = Category::active()->select(['id', 'name', 'slug'])->get();
+        $categories = Category::cachedActive();
         $agents = User::agents()->select(['id', 'name', 'email', 'avatar'])->get();
         $customers = $user->canManageTickets()
             ? User::where('role', User::ROLE_CUSTOMER)->select(['id', 'name', 'email'])->orderBy('name')->get()
