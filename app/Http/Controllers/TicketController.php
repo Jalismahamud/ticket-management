@@ -241,6 +241,15 @@ class TicketController extends Controller
         // Send confirmation notification to ticket creator
         $user->notify(new TicketCreatedNotification($ticket));
 
+        // If ticket remains unassigned, notify active administrators for prompt triage
+        $ticket->refresh();
+        if (!$ticket->assigned_to) {
+            $admins = User::where('role', User::ROLE_ADMIN)->where('is_active', true)->where('id', '!=', $user->id)->get();
+            if ($admins->isNotEmpty()) {
+                \Illuminate\Support\Facades\Notification::send($admins, new TicketCreatedNotification($ticket));
+            }
+        }
+
         return redirect()->route('tickets.show', $ticket)
             ->with('success', "Ticket #{$ticket->ticket_number} created successfully!");
     }
@@ -471,10 +480,23 @@ class TicketController extends Controller
 
         // Send notifications for non-internal replies
         if (!$isInternal) {
-            if ($user->isCustomer() && $ticket->assignee) {
-                $ticket->assignee->notify(new TicketRepliedNotification($ticket, $reply));
+            if ($user->isCustomer()) {
+                if ($ticket->assignee) {
+                    $ticket->assignee->notify(new TicketRepliedNotification($ticket, $reply));
+                } else {
+                    // Alert administrators when customer replies on an unassigned ticket
+                    $admins = User::where('role', User::ROLE_ADMIN)->where('is_active', true)->get();
+                    if ($admins->isNotEmpty()) {
+                        \Illuminate\Support\Facades\Notification::send($admins, new TicketRepliedNotification($ticket, $reply));
+                    }
+                }
             } elseif ($user->canManageTickets() && $ticket->creator && $ticket->creator->id !== $user->id) {
                 $ticket->creator->notify(new TicketRepliedNotification($ticket, $reply));
+            }
+        } else {
+            // Staff-to-staff internal note: alert assigned agent if another staff member added it
+            if ($ticket->assignee && $ticket->assignee->id !== $user->id) {
+                $ticket->assignee->notify(new TicketRepliedNotification($ticket, $reply));
             }
         }
 
@@ -560,6 +582,11 @@ class TicketController extends Controller
             'description' => 'Ticket closed by ' . Auth::user()->name,
         ]);
 
+        // Notify creator that ticket is closed
+        if ($ticket->creator && $ticket->creator->id !== Auth::id()) {
+            $ticket->creator->notify(new TicketResolvedNotification($ticket, Auth::user(), 'Closed'));
+        }
+
         return back()->with('success', "Ticket #{$ticket->ticket_number} has been closed.");
     }
 
@@ -568,7 +595,7 @@ class TicketController extends Controller
      */
     public function reopen(Ticket $ticket): RedirectResponse
     {
-        Gate::authorize('update', $ticket);
+        Gate::authorize('reopen', $ticket);
 
         $ticket->update([
             'status' => Ticket::STATUS_OPEN,
@@ -582,6 +609,21 @@ class TicketController extends Controller
             'type' => TicketActivity::TYPE_STATUS_CHANGED,
             'description' => 'Ticket reopened by ' . Auth::user()->name,
         ]);
+
+        // Notify appropriate party when ticket is reopened
+        $actor = Auth::user();
+        if ($actor->isCustomer()) {
+            if ($ticket->assignee) {
+                $ticket->assignee->notify(new TicketResolvedNotification($ticket, $actor, 'Reopened'));
+            } else {
+                $admins = User::where('role', User::ROLE_ADMIN)->where('is_active', true)->get();
+                if ($admins->isNotEmpty()) {
+                    \Illuminate\Support\Facades\Notification::send($admins, new TicketResolvedNotification($ticket, $actor, 'Reopened'));
+                }
+            }
+        } elseif ($ticket->creator && $ticket->creator->id !== $actor->id) {
+            $ticket->creator->notify(new TicketResolvedNotification($ticket, $actor, 'Reopened'));
+        }
 
         return back()->with('success', "Ticket #{$ticket->ticket_number} has been reopened.");
     }

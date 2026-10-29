@@ -84,11 +84,14 @@ class CheckSlaEscalations extends Command
 
         foreach ($approachingTickets as $ticket) {
             $approachingCount++;
+            $remainingMins = max(1, (int) $now->diffInMinutes($ticket->sla_due_at));
+            $reason = "Approaching SLA Breach in {$remainingMins} minutes";
+
             if ($ticket->assignee) {
-                $ticket->assignee->notify(new TicketEscalatedNotification(
-                    $ticket,
-                    "Approaching SLA Breach in " . $now->diffInMinutes($ticket->sla_due_at) . " minutes"
-                ));
+                $ticket->assignee->notify(new TicketEscalatedNotification($ticket, $reason));
+            } else {
+                // If approaching SLA ticket is unassigned, alert active administrators
+                Notification::send($admins, new TicketEscalatedNotification($ticket, "Unassigned: {$reason}"));
             }
         }
 

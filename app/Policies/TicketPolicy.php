@@ -128,6 +128,22 @@ class TicketPolicy
     }
 
     /**
+     * Determine whether the user can reopen the ticket.
+     */
+    public function reopen(User $user, Ticket $ticket): bool
+    {
+        if (!$this->isActiveUser($user)) {
+            return false;
+        }
+
+        if ($user->isAdmin() || $user->isAgent()) {
+            return true;
+        }
+
+        return (int) $ticket->created_by === (int) $user->id;
+    }
+
+    /**
      * Determine whether the user can delete the ticket.
      */
     public function delete(User $user, Ticket $ticket): bool

@@ -25,10 +25,14 @@ class TicketRepliedNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
+        $senderName = $this->reply->user?->name ?? 'A user';
+        $isInternal = (bool) $this->reply->is_internal;
+        $subjectPrefix = $isInternal ? '[INTERNAL NOTE]' : "[{$this->ticket->ticket_number}]";
+
         return (new MailMessage)
-            ->subject("[{$this->ticket->ticket_number}] New reply on: {$this->ticket->subject}")
+            ->subject("{$subjectPrefix} New reply on: {$this->ticket->subject}")
             ->greeting("Hello {$notifiable->name},")
-            ->line("{$this->reply->user->name} posted a new reply on ticket #{$this->ticket->ticket_number}:")
+            ->line("{$senderName} posted a " . ($isInternal ? 'private internal note' : 'reply') . " on ticket #{$this->ticket->ticket_number}:")
             ->line('"' . \Illuminate\Support\Str::limit($this->reply->message, 150) . '"')
             ->action('View Full Conversation', route('tickets.show', $this->ticket))
             ->line('You can respond directly through the support portal.');
@@ -36,13 +40,17 @@ class TicketRepliedNotification extends Notification implements ShouldQueue
 
     public function toArray(object $notifiable): array
     {
+        $senderName = $this->reply->user?->name ?? 'Staff';
+        $prefix = $this->reply->is_internal ? 'Internal note from ' : 'New reply from ';
+
         return [
             'ticket_id' => $this->ticket->id,
             'ticket_number' => $this->ticket->ticket_number,
             'reply_id' => $this->reply->id,
-            'replied_by' => $this->reply->user->name,
+            'replied_by' => $senderName,
+            'is_internal' => (bool) $this->reply->is_internal,
             'type' => 'ticket_replied',
-            'message' => "New reply from {$this->reply->user->name} on Ticket #{$this->ticket->ticket_number}.",
+            'message' => "{$prefix}{$senderName} on Ticket #{$this->ticket->ticket_number}.",
         ];
     }
 }

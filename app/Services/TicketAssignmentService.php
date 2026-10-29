@@ -53,6 +53,11 @@ class TicketAssignmentService
                 ],
             ]);
 
+            // Notify ticket creator that an agent has claimed and is working on the ticket
+            if ($lockedTicket->creator && $lockedTicket->creator->id !== $agent->id) {
+                $lockedTicket->creator->notify(new TicketAssignedNotification($lockedTicket));
+            }
+
             return $lockedTicket;
         });
     }

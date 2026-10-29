@@ -157,6 +157,88 @@ test('dispatches TicketResolvedNotification to creator when ticket is resolved',
     });
 });
 
+test('dispatches notification to active admins when ticket is created unassigned', function () {
+    Notification::fake();
+
+    $adminA = User::factory()->create(['role' => User::ROLE_ADMIN]);
+    $adminB = User::factory()->create(['role' => User::ROLE_ADMIN]);
+    $category = Category::create(['name' => 'General Inquiry', 'slug' => 'general-inquiry']);
+
+    $response = $this->actingAs($adminA)->post(route('tickets.store'), [
+        'subject' => 'Unassigned inquiry',
+        'category_id' => $category->id,
+        'priority' => 'low',
+        'description' => 'Need help with account details',
+        'auto_assign' => false,
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $ticket = Ticket::where('subject', 'Unassigned inquiry')->firstOrFail();
+
+    Notification::assertSentTo($adminA, TicketCreatedNotification::class);
+    Notification::assertSentTo($adminB, TicketCreatedNotification::class);
+});
+
+test('dispatches notification to customer when agent claims ticket', function () {
+    Notification::fake();
+
+    $customer = User::factory()->create(['role' => User::ROLE_CUSTOMER]);
+    $agent = User::factory()->create(['role' => User::ROLE_AGENT]);
+    $ticket = makeTicket(['created_by' => $customer->id, 'assigned_to' => null]);
+
+    $response = $this->actingAs($agent)->post(route('tickets.claim', $ticket));
+
+    $response->assertSessionHasNoErrors();
+    expect($ticket->fresh()->assigned_to)->toBe($agent->id);
+
+    Notification::assertSentTo($customer, TicketAssignedNotification::class, function ($n) use ($ticket) {
+        return $n->ticket->id === $ticket->id;
+    });
+});
+
+test('dispatches notification to customer when ticket is closed', function () {
+    Notification::fake();
+
+    $customer = User::factory()->create(['role' => User::ROLE_CUSTOMER]);
+    $agent = User::factory()->create(['role' => User::ROLE_AGENT]);
+    $ticket = makeTicket([
+        'created_by' => $customer->id,
+        'assigned_to' => $agent->id,
+        'status' => Ticket::STATUS_IN_PROGRESS,
+    ]);
+
+    $response = $this->actingAs($agent)->post(route('tickets.close', $ticket));
+
+    $response->assertSessionHasNoErrors();
+    expect($ticket->fresh()->status)->toBe(Ticket::STATUS_CLOSED);
+
+    Notification::assertSentTo($customer, TicketResolvedNotification::class, function ($n) use ($ticket) {
+        return $n->ticket->id === $ticket->id && $n->action === 'Closed';
+    });
+});
+
+test('dispatches notification when ticket is reopened', function () {
+    Notification::fake();
+
+    $customer = User::factory()->create(['role' => User::ROLE_CUSTOMER]);
+    $agent = User::factory()->create(['role' => User::ROLE_AGENT]);
+    $ticket = makeTicket([
+        'created_by' => $customer->id,
+        'assigned_to' => $agent->id,
+        'status' => Ticket::STATUS_RESOLVED,
+    ]);
+
+    // Customer reopens ticket
+    $response = $this->actingAs($customer)->post(route('tickets.reopen', $ticket));
+
+    $response->assertSessionHasNoErrors();
+    expect($ticket->fresh()->status)->toBe(Ticket::STATUS_OPEN);
+
+    Notification::assertSentTo($agent, TicketResolvedNotification::class, function ($n) use ($ticket) {
+        return $n->ticket->id === $ticket->id && $n->action === 'Reopened';
+    });
+});
+
 test('advanced search filters by agent, customer, and date range', function () {
     $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
     $customerA = User::factory()->create(['role' => User::ROLE_CUSTOMER, 'name' => 'Alice']);

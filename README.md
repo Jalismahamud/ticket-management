@@ -166,7 +166,7 @@ Key architectural pillars:
 - **User Interface:** Clean two-tier filter toolbar with an expandable Advanced Filter drawer and instant reset controls. Pagination is maintained across filtered queries.
 
 ### 13. Streaming CSV Import
-- **Service:** `App\Services\TicketCsvImportService`
+- **Service:** `App\Services\TicketImportService`
 - **Memory Efficiency:** Uses PHP streaming handles (`fgetcsv`) to achieve constant $O(1)$ memory consumption, allowing large CSV files to import without exhausting server RAM.
 - **Validation & Duplicate Protection:** Validates headers, data types, and required fields row-by-row. Skips duplicates matching existing subjects or ticket numbers, reporting imported counts, skipped rows, and detailed validation errors upon completion.
 
@@ -201,7 +201,7 @@ Key architectural pillars:
 
 ### 17. Automated Testing Suite
 - **Framework:** Pest PHP 4.x / PHPUnit 12.x
-- **Coverage:** 32 comprehensive feature and unit tests with 128 assertions verifying SLA rollover rules, race condition safety, authorization policies, CSV streaming, notification dispatching, filter queries, and print layouts.
+- **Coverage:** 49 comprehensive feature and unit tests with 208 assertions verifying SLA rollover rules, race condition safety, authorization policies, CSV streaming, dynamic notifications, role redirection, filter queries, and print layouts.
 
 ---
 
@@ -382,8 +382,11 @@ php artisan test
 ### Test Suite Summary
 ```text
 PASS  Tests\Unit\ExampleTest
+PASS  Tests\Feature\AuthRoleRedirectTest
 PASS  Tests\Feature\ConcurrentTicketAssignmentTest
+PASS  Tests\Feature\DynamicNotificationTest
 PASS  Tests\Feature\ExampleTest
+PASS  Tests\Feature\GlobalSearchTest
 PASS  Tests\Feature\NotificationAndFilterTest
 PASS  Tests\Feature\ProfileAndSettingsTest
 PASS  Tests\Feature\ResponsiveViewTest
@@ -392,8 +395,8 @@ PASS  Tests\Feature\TicketAuthorizationTest
 PASS  Tests\Feature\TicketLifecycleTest
 PASS  Tests\Feature\TicketUpdateAndApiTest
 
-Tests:    32 passed (128 assertions)
-Duration: 4.78s
+Tests:    49 passed (208 assertions)
+Duration: 4.35s
 ```
 
 ---
