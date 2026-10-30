@@ -77,6 +77,7 @@ Route::middleware('auth')->group(function () {
     // CSV Import Routes (Placed before {ticket} parameter)
     Route::get('/tickets/import', [\App\Http\Controllers\TicketImportController::class, 'show'])->name('tickets.import');
     Route::post('/tickets/import', [\App\Http\Controllers\TicketImportController::class, 'import'])->name('tickets.import.post');
+    Route::get('/tickets/import/progress/{importId}', [\App\Http\Controllers\TicketImportController::class, 'progress'])->name('tickets.import.progress');
     Route::get('/tickets/import/sample', [\App\Http\Controllers\TicketImportController::class, 'downloadSample'])->name('tickets.import.sample');
 
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');

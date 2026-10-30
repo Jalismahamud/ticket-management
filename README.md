@@ -165,9 +165,11 @@ Key architectural pillars:
   - Created Date Range (`date_from` and `date_to`).
 - **User Interface:** Clean two-tier filter toolbar with an expandable Advanced Filter drawer and instant reset controls. Pagination is maintained across filtered queries.
 
-### 13. Streaming CSV Import
+### 13. Streaming CSV Import & Live Progress Tracking
 - **Service:** `App\Services\TicketImportService`
 - **Memory Efficiency:** Uses PHP streaming handles (`fgetcsv`) to achieve constant $O(1)$ memory consumption, allowing large CSV files to import without exhausting server RAM.
+- **Live Percentage Progress Bar (0% - 100%):** Provides real-time stream tracking via lightweight HTTP polling and cache storage, displaying live percentages, processed row counts, successful imports, and skipped duplicates without requiring WebSockets.
+- **Shared Hosting Compatible:** Works seamlessly on standard cPanel/Shared Hosting without daemon or root worker requirements.
 - **Validation & Duplicate Protection:** Validates headers, data types, and required fields row-by-row. Skips duplicates matching existing subjects or ticket numbers, reporting imported counts, skipped rows, and detailed validation errors upon completion.
 
 ### 14. Operations Analytics Dashboard
@@ -201,7 +203,7 @@ Key architectural pillars:
 
 ### 17. Automated Testing Suite
 - **Framework:** Pest PHP 4.x / PHPUnit 12.x
-- **Coverage:** 49 comprehensive feature and unit tests with 208 assertions verifying SLA rollover rules, race condition safety, authorization policies, CSV streaming, dynamic notifications, role redirection, filter queries, and print layouts.
+- **Coverage:** 50 comprehensive feature and unit tests with 212 assertions verifying SLA rollover rules, race condition safety, authorization policies, CSV streaming and live percentage tracking, dynamic notifications, role redirection, filter queries, and print layouts.
 
 ---
 
@@ -395,8 +397,8 @@ PASS  Tests\Feature\TicketAuthorizationTest
 PASS  Tests\Feature\TicketLifecycleTest
 PASS  Tests\Feature\TicketUpdateAndApiTest
 
-Tests:    49 passed (208 assertions)
-Duration: 4.35s
+Tests:    50 passed (212 assertions)
+Duration: 6.60s
 ```
 
 ---

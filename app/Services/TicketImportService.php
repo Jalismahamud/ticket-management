@@ -20,9 +20,10 @@ class TicketImportService
      *
      * @param UploadedFile|string $file
      * @param User $importedBy
+     * @param string|null $importId Optional tracking ID for live progress reporting
      * @return array{total: int, imported: int, skipped: int, errors: array<string>}
      */
-    public function import(UploadedFile|string $file, User $importedBy): array
+    public function import(UploadedFile|string $file, User $importedBy, ?string $importId = null): array
     {
         $filePath = is_string($file) ? $file : $file->getRealPath();
 
@@ -33,6 +34,31 @@ class TicketImportService
                 'skipped' => 0,
                 'errors' => ['Unable to read uploaded CSV file.'],
             ];
+        }
+
+        // Fast scan to count total lines for accurate live percentage calculation
+        $totalLines = 0;
+        $countHandle = fopen($filePath, 'r');
+        if ($countHandle) {
+            while (!feof($countHandle)) {
+                if (fgets($countHandle) !== false) {
+                    $totalLines++;
+                }
+            }
+            fclose($countHandle);
+            $totalLines = max(1, $totalLines - 1); // Exclude header row
+        }
+
+        if ($importId) {
+            \Illuminate\Support\Facades\Cache::put("import_progress_{$importId}", [
+                'total' => $totalLines,
+                'processed' => 0,
+                'imported' => 0,
+                'skipped' => 0,
+                'percentage' => 0,
+                'status' => 'processing',
+                'message' => 'Validating headers and preparing import...',
+            ], 600);
         }
 
         $handle = fopen($filePath, 'r');
@@ -185,6 +211,20 @@ class TicketImportService
                 $imported += count($batch);
                 $batch = [];
             }
+
+            // Live progress report every 5 rows or on last row
+            if ($importId && ($total % 5 === 0 || $total === $totalLines)) {
+                $pct = min(99, (int) round(($total / $totalLines) * 100));
+                \Illuminate\Support\Facades\Cache::put("import_progress_{$importId}", [
+                    'total' => $totalLines,
+                    'processed' => $total,
+                    'imported' => $imported,
+                    'skipped' => $skipped,
+                    'percentage' => $pct,
+                    'status' => 'processing',
+                    'message' => "Processing row {$total} of {$totalLines} ({$pct}%)...",
+                ], 600);
+            }
         }
 
         if (!empty($batch)) {
@@ -194,12 +234,27 @@ class TicketImportService
 
         fclose($handle);
 
-        return [
+        $report = [
             'total' => $total,
             'imported' => $imported,
             'skipped' => $skipped,
             'errors' => $errors,
         ];
+
+        if ($importId) {
+            \Illuminate\Support\Facades\Cache::put("import_progress_{$importId}", [
+                'total' => $total,
+                'processed' => $total,
+                'imported' => $imported,
+                'skipped' => $skipped,
+                'percentage' => 100,
+                'status' => 'completed',
+                'message' => 'Import completed successfully!',
+                'report' => $report,
+            ], 600);
+        }
+
+        return $report;
     }
 
     /**

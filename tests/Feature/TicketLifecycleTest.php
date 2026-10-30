@@ -115,3 +115,59 @@ test('authorized user can view dedicated printable ticket report', function () {
     $response->assertSee('TKT-2026-000099');
     $response->assertSee('Official Support Incident', false);
 });
+
+test('csv import tracks progress via cache and reports live percentage', function () {
+    $admin = User::create([
+        'name' => 'Dwight Schrute',
+        'email' => 'dwight@example.com',
+        'password' => bcrypt('password'),
+        'role' => User::ROLE_ADMIN,
+    ]);
+
+    $category = Category::create(['name' => 'Logistics', 'slug' => 'logistics']);
+
+    $csvContent = implode("\n", [
+        'subject,description,priority,category,customer_email',
+        'Beet Shipment Delayed,Need updates on farm delivery,high,Logistics,farmer1@example.com',
+        'Order Receipt Missing,Cannot find invoice in portal,low,Logistics,farmer2@example.com',
+    ]);
+
+    $tempFile = tmpfile();
+    fwrite($tempFile, $csvContent);
+    $meta = stream_get_meta_data($tempFile);
+    $path = $meta['uri'];
+
+    $uploadedFile = new \Illuminate\Http\UploadedFile(
+        $path,
+        'batch.csv',
+        'text/csv',
+        null,
+        true
+    );
+
+    $importId = 'test-track-' . uniqid();
+
+    $response = $this->actingAs($admin)
+        ->post(route('tickets.import.post'), [
+            'csv_file' => $uploadedFile,
+            'import_id' => $importId,
+        ], ['Accept' => 'application/json', 'X-Requested-With' => 'XMLHttpRequest']);
+
+    $response->assertOk()
+        ->assertJson([
+            'success' => true,
+            'import_id' => $importId,
+        ]);
+
+    // Check live progress endpoint
+    $progressResponse = $this->actingAs($admin)->get(route('tickets.import.progress', $importId));
+    $progressResponse->assertOk()
+        ->assertJson([
+            'status' => 'completed',
+            'percentage' => 100,
+            'total' => 2,
+            'imported' => 2,
+        ]);
+
+    fclose($tempFile);
+});
