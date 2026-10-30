@@ -52,10 +52,10 @@ use App\Http\Controllers\AuthController;
 // Authentication Guest Routes
 Route::middleware('guest')->group(function () {
     Route::get('/signin', [AuthController::class, 'showLogin'])->name('signin');
-    Route::post('/signin', [AuthController::class, 'login'])->name('login');
+    Route::post('/signin', [AuthController::class, 'login'])->middleware('throttle:10,1')->name('login');
     Route::get('/login', fn() => redirect()->route('signin'))->name('login.redirect');
     Route::get('/signup', [AuthController::class, 'showRegister'])->name('signup');
-    Route::post('/signup', [AuthController::class, 'register'])->name('register');
+    Route::post('/signup', [AuthController::class, 'register'])->middleware('throttle:10,1')->name('register');
     Route::get('/quick-login/{role}', [AuthController::class, 'quickLogin'])->name('quick.login');
 });
 
@@ -63,7 +63,7 @@ use App\Http\Controllers\TicketController;
 
 // Authenticated Routes
 Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('throttle:30,1')->name('logout');
 
     // Global Header Search
     Route::get('/search', [\App\Http\Controllers\SearchController::class, 'handle'])->name('global.search');
@@ -97,7 +97,7 @@ Route::middleware('auth')->group(function () {
     // Profile Management
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile');
     Route::post('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->middleware('throttle:10,1')->name('profile.password');
 
     // Notifications (Dynamic Real-Time & AJAX)
     Route::get('/notifications/fetch', [\App\Http\Controllers\NotificationController::class, 'fetch'])->name('notifications.fetch');
