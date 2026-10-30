@@ -297,6 +297,11 @@ class TicketImportService
      */
     public static function generateSampleCsv(): string
     {
+        $filePath = public_path('sample_tickets_import.csv');
+        if (file_exists($filePath)) {
+            return file_get_contents($filePath);
+        }
+
         $headers = ['subject', 'description', 'priority', 'category', 'customer_email'];
         $rows = [
             ['Payment gateway timeout', 'Checkout throws 504 gateway timeout on webhook.', 'critical', 'Technical Support', 'client1@example.com'],

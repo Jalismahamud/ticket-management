@@ -8,13 +8,48 @@
   **A production-ready, enterprise-grade Support Ticket and SLA Management System built with Laravel 12, Tailwind CSS v4, Alpine.js v3, and TailAdmin.**
 
   [Live Application Demo: ticket.jalisdev.com](https://ticket.jalisdev.com)
+</div>
 
-  <p>
-    <a href="https://ticket.jalisdev.com" target="_blank" rel="noopener noreferrer">
-      <img src="public/images/screenshots/ticket-preview.png" alt="Support Ticket System Preview" width="850" />
-    </a>
-  </p>
-  <p><em>Click the image above to open the live system at <a href="https://ticket.jalisdev.com">ticket.jalisdev.com</a></em></p>
+---
+
+## Application Showcase & Screenshots
+
+<p align="center">
+  <em>Click any screenshot below to open the live system at <a href="https://ticket.jalisdev.com">ticket.jalisdev.com</a></em>
+</p>
+
+### 1. Authentication Portal & 1-Click Demo Role Switcher
+<div align="center">
+  <a href="https://ticket.jalisdev.com" target="_blank" rel="noopener noreferrer">
+    <img src="public/images/screenshots/01-signin-portal.jpg" alt="Authentication Portal & 1-Click Demo Role Switcher" width="920" />
+  </a>
+</div>
+
+<br />
+
+### 2. Operations Analytics & SLA Dashboard
+<div align="center">
+  <a href="https://ticket.jalisdev.com" target="_blank" rel="noopener noreferrer">
+    <img src="public/images/screenshots/02-dashboard-analytics.jpg" alt="Operations Analytics & SLA Dashboard" width="920" />
+  </a>
+</div>
+
+<br />
+
+### 3. Support Tickets Management & Scoped Filters
+<div align="center">
+  <a href="https://ticket.jalisdev.com" target="_blank" rel="noopener noreferrer">
+    <img src="public/images/screenshots/03-tickets-management.png" alt="Support Tickets Management & Scoped Filters" width="920" />
+  </a>
+</div>
+
+<br />
+
+### 4. SLA Breached Queue & Automated Escalation Monitoring
+<div align="center">
+  <a href="https://ticket.jalisdev.com" target="_blank" rel="noopener noreferrer">
+    <img src="public/images/screenshots/04-sla-breached-monitoring.png" alt="SLA Breached Queue & Automated Escalation Monitoring" width="920" />
+  </a>
 </div>
 
 ---

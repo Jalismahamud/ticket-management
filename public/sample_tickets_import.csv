@@ -29,3 +29,4 @@ subject,description,priority,category,customer_email
 "Feedback on new ticket creation interface","The new drag and drop attachment zone makes submitting tickets much faster!","low","General Inquiry","happy.customer@clientdomain.com"
 "Feature request: Bulk ticket status update","It would save time if agents could select multiple tickets and mark them in progress.","low","Feature Request","operations@customerservice.com"
 "Newsletter unsubscribe request","Please remove newsletter subscription while keeping critical system alerts enabled.","low","General Inquiry","user.privacy@dataconsulting.com"
+
