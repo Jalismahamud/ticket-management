@@ -20,7 +20,15 @@ class TicketRepliedNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        $channels = ['database'];
+        $email = $notifiable->email ?? '';
+
+        // Only dispatch real SMTP mail if recipient is not an RFC 2606 documentation/test domain
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) && !preg_match('/@(example\.(com|org|net)|test|localhost|invalid)$/i', $email)) {
+            $channels[] = 'mail';
+        }
+
+        return $channels;
     }
 
     public function toMail(object $notifiable): MailMessage
